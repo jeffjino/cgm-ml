@@ -41,7 +41,6 @@ def test_get_files():
     pcd_path = [REPO_DIR + '/qr_code/qr_code_test/pc/pc_1584994919-58mqazoorz_1591550095148_102_000.pcd',
                 REPO_DIR + '/qr_code/qr_code_test/pc/pc_1584994919-58mqazoorz_1591550095148_100_000.pcd', REPO_DIR + '/qr_code/qr_code_test/pc/pc_1584994919-58mqazoorz_1591550095148_101_000.pcd']
     files = get_files(norm_rgb_time, rgb_path, norm_pcd_time, pcd_path)
-    print(REPO_DIR)
 
     assert files == [[REPO_DIR + '/qr_code/qr_code_test/pc/pc_1584994919-58mqazoorz_1591550095148_102_000.pcd', REPO_DIR + '/qr_code/qr_code_test/rgb/rgb_1584994919-58mqazoorz_1591550095148_102_668578.709103759.jpg'], [REPO_DIR + '/qr_code/qr_code_test/pc/pc_1584994919-58mqazoorz_1591550095148_100_000.pcd',
                                                                                                                                                                                                                            REPO_DIR + '/qr_code/qr_code_test/rgb/rgb_1584994919-58mqazoorz_1591550095148_100_668549.981146759.jpg'], [REPO_DIR + '/qr_code/qr_code_test/pc/pc_1584994919-58mqazoorz_1591550095148_101_000.pcd', REPO_DIR + '/qr_code/qr_code_test/rgb/rgb_1584994919-58mqazoorz_1591550095148_101_668601.946538759.jpg']]
