@@ -1,10 +1,10 @@
 import sys
-import numpy as np
 from pathlib import Path
 
-sys.path.append(str(Path(__file__).parents[1]))  # noqa: E402
-from rgbd import find_closest, get_filename, get_files, process_pcd
-from get_timestamps import get_timestamps_from_rgb
+import numpy as np
+sys.path.append(str(Path(__file__).parents[1])) # noqa
+from rgbd import find_closest, get_files # noqa
+
 
 REPO_DIR = str(Path(__file__).parents[0].absolute())
 
