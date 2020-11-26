@@ -76,49 +76,49 @@ def get_filename(pcd_file, rgbd_folder, qr_folder):
     return rgbd_filename
 
 
-def process_pcd(paths, process_index=0):
+def process_pcd(paths,qr, process_index=0):
 
-    pcd_file = paths[0]
-    jpg_file = paths[1]
+    for path in tqdm(paths):
+        pcd_file = path[0]
+        jpg_file = path[1]
+        #rgb image
+        image = Image.open(jpg_file)
 
-    #rgb image
-    image = Image.open(jpg_file)
+        #get the qr folder
+        qr_folder = str(Path(qr)).split("/")[-1]
 
-    #get the qr folder
-    qr_folder = str(Path(qr)).split("/")[-1]
+        calibration_file = "./calibration.xml"
 
-    calibration_file = "./calibration.xml"
-
-    if args.pickled:
-        #get height and weight label for the corresponding artifact
-        height = int(artifacts_file.loc[np.where(
-            artifacts_file["qrcode"] == qr_folder)].iloc[0].loc["height"])
-        weight = int(artifacts_file.loc[np.where(
-            artifacts_file["qrcode"] == qr_folder)].iloc[0].loc["weight"])
-
-    rgbd_filename = get_filename(pcd_file, rgbd_folder, qr_folder)
-
-    logging.info("Going to writing new fused data to: " + rgbd_filename)
-
-    #saving the rgbd file with labels as pickled data
-    try:
-        rgbdseg_arr = fuse_rgbd(calibration_file, pcd_file, image)  # , seg_path)
         if args.pickled:
-            labels = np.array([height, weight])
-            if not labels:
-                print("labels dont exist in artifacts.csv..exiting")
-                sys.exit()
-            data = (rgbdseg_arr, labels)
-            pickle.dump(data, open(rgbd_filename, "wb"))
-        else:
-            #saving as a png file if not pickled data
-            rgbd_filename = rgbd_filename.replace(".pkl", ".npy")
-            np.save(rgbd_filename, rgbdseg_arr)
+        #get height and weight label for the corresponding artifact
+            height = int(artifacts_file.loc[np.where(
+                artifacts_file["qrcode"] == qr_folder)].iloc[0].loc["height"])
+            weight = int(artifacts_file.loc[np.where(
+                artifacts_file["qrcode"] == qr_folder)].iloc[0].loc["weight"])
 
-        logging.info("successfully wrote new data to" + rgbd_filename)
-    except Exception as e:
-        logging.error("Something went wrong.Skipping this file")
-        logging.error(str(e))
+        rgbd_filename = get_filename(pcd_file, rgbd_folder, qr_folder)
+
+        logging.info("Going to writing new fused data to: " + rgbd_filename)
+
+        #saving the rgbd file with labels as pickled data
+        try:
+            rgbdseg_arr = fuse_rgbd(calibration_file, pcd_file, image)  # , seg_path)
+            if args.pickled:
+                labels = np.array([height, weight])
+                if not labels:
+                    print("labels dont exist in artifacts.csv..exiting")
+                    sys.exit()
+                data = (rgbdseg_arr, labels)
+                pickle.dump(data, open(rgbd_filename, "wb"))
+            else:
+                #saving as a png file if not pickled data
+                rgbd_filename = rgbd_filename.replace(".pkl", ".npy")
+                np.save(rgbd_filename, rgbdseg_arr)
+
+            logging.info("successfully wrote new data to" + rgbd_filename)
+        except Exception as e:
+            logging.error("Something went wrong.Skipping this file")
+            logging.error(str(e))
 
 
 def get_files(norm_rgb_time, rgb_path, norm_pcd_time, pcd_path):
@@ -215,13 +215,15 @@ if __name__ == "__main__":
     #getting the timestamps of rgb and pcd paths
         [norm_rgb_time, rgb_path] = get_timestamps_from_rgb(rgb_paths)
         [norm_pcd_time, pcd_path] = get_timestamps_from_pcd(pcd_paths)
+        rgb_paths.clear()
+        pcd_paths.clear()
 
         paths = get_files(norm_rgb_time, rgb_path, norm_pcd_time, pcd_path)
 
         #processing every pcd file with its nearest rgb using multiprocessing workers
         with concurrent.futures.ProcessPoolExecutor(
                 max_workers=args.num_workers) as executor:
-            res = list(tqdm(executor.map(process_pcd, paths),
+            res = list(tqdm(executor.map(process_pcd(paths,qr)),
                             total=len(paths)))
 
     end = datetime.datetime.now()

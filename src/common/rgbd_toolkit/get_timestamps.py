@@ -5,7 +5,7 @@ import numpy as np
 
 
 def get_timestamps_from_rgb(rgb_paths):
-    path = [x for x in rgb_paths]
+    path = list(rgb_paths)
     timestamps = []
 
     for p in path:
@@ -19,7 +19,7 @@ def get_timestamps_from_rgb(rgb_paths):
         return [error, path]
 
     timestamps = np.asarray(timestamps)
-
+    
     return [timestamps, path]
 
 
@@ -42,7 +42,7 @@ def get_timestamp_from_pcd(pcd_path):
 
 def get_timestamps_from_pcd(pcd_paths):
     timestamps = np.array([])
-    path = [x for x in pcd_paths]
+    path = list(pcd_paths)
 
     #iterate over all paths pointing to pcds
     for p in path:
