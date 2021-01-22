@@ -8,6 +8,7 @@ import glob2 as glob
 import tensorflow as tf
 from azureml.core import Experiment, Workspace
 from azureml.core.run import Run
+import numpy as np
 
 from config import CONFIG, DATASET_MODE_DOWNLOAD, DATASET_MODE_MOUNT
 from constants import DATA_DIR_ONLINE_RUN, MODEL_CKPT_FILENAME, REPO_DIR
@@ -35,6 +36,7 @@ from tmp_model_util.utils import download_dataset, get_dataset_path, AzureLogCal
 # Make experiment reproducible
 tf.random.set_seed(CONFIG.SPLIT_SEED)
 random.seed(CONFIG.SPLIT_SEED)
+np.random.seed(CONFIG.SPLIT_SEED)
 
 DATA_DIR = REPO_DIR / 'data' if run.id.startswith("OfflineRun") else Path(".")
 print(f"DATA_DIR: {DATA_DIR}")
