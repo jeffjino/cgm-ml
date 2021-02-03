@@ -1,4 +1,5 @@
 from tensorflow.keras import models, layers
+import evidential_deep_learning as edl
 
 
 def create_cnn(input_shape, dropout):
@@ -50,6 +51,6 @@ def create_cnn(input_shape, dropout):
     if dropout:
         model.add(layers.Dropout(0.25))
 
-    model.add(layers.Dense(1, activation="linear"))
+    model.add(edl.layers.DenseNormalGamma(1))
 
     return model
