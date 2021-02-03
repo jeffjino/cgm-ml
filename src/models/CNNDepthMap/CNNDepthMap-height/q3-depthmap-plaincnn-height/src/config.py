@@ -15,7 +15,7 @@ CONFIG = Bunch(dict(
     SHUFFLE_BUFFER_SIZE=2560,
     NORMALIZATION_VALUE=7.5,
     LEARNING_RATE=0.0007,
-    USE_ONE_CYCLE=True,
+    USE_ONE_CYCLE=False,
     USE_DROPOUT=True,
 
     # Parameters for dataset generation.
