@@ -47,6 +47,7 @@ MAX_HEIGHT = 120
 MAX_AGE = 1856.0
 
 STUNTING_DIAGNOSIS = ["Not Stunted", "Moderately Stunted", "Severly Stunted"]
+WASTING_DIAGNOSIS = ["Not Under-weight", "Moderately Under-weight", "Severly Under-weight"]
 
 
 def process_image(data):
@@ -337,26 +338,19 @@ def draw_stunting_diagnosis(df: pd.DataFrame, png_out_fpath: str):
         df: Dataframe with columns: qrcode, scantype, COLUMN_NAME_AGE, GT, predicted
         png_out_fpath: File path where plot image will be saved
     """
-    df = parallelize_dataframe(df, calculate_confusion_matrix_stunting)
+    df = parallelize_dataframe(df, calculate_zscore_lhfa)
     actual = np.where(df['Z_actual'].values < -3, 'Severly Stunted',
                       np.where(df['Z_actual'].values > -2, 'Not Stunted', 'Moderately Stunted'))
     predicted = np.where(df['Z_predicted'].values < -3, 'Severly Stunted',
                          np.where(df['Z_predicted'].values > -2, 'Not Stunted', 'Moderately Stunted'))
     data = confusion_matrix(actual, predicted)
-    T, FP, FN = calculate_percentage_confusion_matrix(data)
-    fig = plt.figure(figsize=(15, 15))
-    ax = fig.add_subplot(111)
-    disp = ConfusionMatrixDisplay(confusion_matrix=data, display_labels=STUNTING_DIAGNOSIS)
-    disp.plot(cmap='Blues', values_format='d', ax=ax)
-    s = f"True: {round(T, 2)} False Positive: {round(FP, 2)} False Negative: {round(FN, 2)}"
-    plt.text(0.5, 0.5, s, size=10, bbox=dict(boxstyle="square", facecolor='white'))
-    ax.set_title("Stunting Diagnosis")
-    Path(png_out_fpath).parent.mkdir(parents=True, exist_ok=True)
-    plt.savefig(png_out_fpath)
-    plt.close()
+    draw_confusion_matrix(data, png_out_fpath, STUNTING_DIAGNOSIS, 'Stunting Diagnosis')
 
 
-def calculate_confusion_matrix_stunting(df):
+def calculate_zscore_lhfa(df):
+    '''
+    lhfa : length/height for age
+    '''
     cal = Calculator()
 
     def utils(age_in_days, height, sex):
@@ -369,6 +363,54 @@ def calculate_confusion_matrix_stunting(df):
         row[COLUMN_NAME_AGE]), sex='M' if row[COLUMN_NAME_SEX] == SEX_DICT['male'] else 'F', height=row['predicted']), axis=1)
 
     return df
+
+
+def draw_wasting_diagnosis(df: pd.DataFrame, png_out_fpath: str):
+    """Draw wasting Confusion Matrix
+
+    Args:
+        df_: Dataframe with columns: qrcode, scantype, COLUMN_NAME_AGE, GT, predicted
+        png_out_fpath: File path where plot image will be saved
+    """
+    df = parallelize_dataframe(df, calculate_zscore_wfa)
+    actual = np.where(df['Z_actual'].values < -3, 'Severly Under-weight',
+                      np.where(df['Z_actual'].values > -2, 'Not Under-weight', 'Moderately Under-weight'))
+    predicted = np.where(df['Z_predicted'].values < -3, 'Severly Under-weight',
+                         np.where(df['Z_predicted'].values > -2, 'Not Under-weight', 'Moderately Under-weight'))
+    data = confusion_matrix(actual, predicted)
+    draw_confusion_matrix(data, png_out_fpath, WASTING_DIAGNOSIS, 'Wasting Diagnosis')
+
+
+def calculate_zscore_wfa(df):
+    '''
+    wfa: Weight for age
+    '''
+    cal = Calculator()
+
+    def utils(age_in_days, weight, sex):
+        if age_in_days <= MAX_AGE:
+            return cal.zScore_wfa(age_in_days=age_in_days, sex=sex, weight=weight)
+
+    df['Z_actual'] = df.apply(lambda row: utils(age_in_days=int(row[COLUMN_NAME_AGE]),
+                                                sex='M' if row[COLUMN_NAME_SEX] == SEX_DICT['male'] else 'F', weight=row['GT']), axis=1)
+    df['Z_predicted'] = df.apply(lambda row: utils(age_in_days=int(
+        row[COLUMN_NAME_AGE]), sex='M' if row[COLUMN_NAME_SEX] == SEX_DICT['male'] else 'F', weight=row['predicted']), axis=1)
+
+    return df
+
+
+def draw_confusion_matrix(data, png_out_fpath, display_labels, title):
+    T, FP, FN = calculate_percentage_confusion_matrix(data)
+    fig = plt.figure(figsize=(15, 15))
+    ax = fig.add_subplot(111)
+    disp = ConfusionMatrixDisplay(confusion_matrix=data, display_labels=WASTING_DIAGNOSIS)
+    disp.plot(cmap='Blues', values_format='d', ax=ax)
+    s = f"True: {round(T, 2)} False Positive: {round(FP, 2)} False Negative: {round(FN, 2)}"
+    plt.text(0.5, 0.5, s, size=10, bbox=dict(boxstyle="square", facecolor='white'))
+    ax.set_title(title)
+    Path(png_out_fpath).parent.mkdir(parents=True, exist_ok=True)
+    plt.savefig(png_out_fpath)
+    plt.close()
 
 
 def parallelize_dataframe(df, calculate_confusion_matrix, n_cores=8):

@@ -18,12 +18,12 @@ from tensorflow.python import keras
 
 import utils
 from constants import DATA_DIR_ONLINE_RUN, DEFAULT_CONFIG, REPO_DIR
-from utils import (AGE_IDX, COLUMN_NAME_AGE, COLUMN_NAME_GOODBAD, HEIGHT_IDX,
+from utils import (AGE_IDX, COLUMN_NAME_AGE, COLUMN_NAME_GOODBAD, HEIGHT_IDX, WEIGHT_IDX,
                    COLUMN_NAME_SEX, GOODBAD_IDX, GOODBAD_DICT, SEX_IDX,
                    calculate_performance, calculate_performance_age,
                    calculate_performance_goodbad, calculate_performance_sex,
                    download_dataset, draw_age_scatterplot, draw_stunting_diagnosis,
-                   draw_uncertainty_goodbad_plot, get_dataset_path,
+                   draw_uncertainty_goodbad_plot, get_dataset_path, draw_wasting_diagnosis,
                    get_model_path, draw_uncertainty_scatterplot)
 
 
@@ -237,7 +237,8 @@ if __name__ == "__main__":
     # filter goodbad==delete
     if GOODBAD_IDX in DATA_CONFIG.TARGET_INDEXES:
         goodbad_index = DATA_CONFIG.TARGET_INDEXES.index(GOODBAD_IDX)
-        dataset_norm = dataset_norm.filter(lambda _path, _depthmap, targets: targets[goodbad_index] != GOODBAD_DICT['delete'])
+        dataset_norm = dataset_norm.filter(
+            lambda _path, _depthmap, targets: targets[goodbad_index] != GOODBAD_DICT['delete'])
 
     dataset_norm = dataset_norm.cache()
     dataset_norm = dataset_norm.prefetch(tf.data.experimental.AUTOTUNE)
@@ -309,6 +310,14 @@ if __name__ == "__main__":
         draw_stunting_diagnosis(df, png_file)
         end = time.time()
         print(f"Total time for Calculate zscores and save confusion matrix: {end - start:.3} sec")
+
+    if WEIGHT_IDX in DATA_CONFIG.TARGET_INDEXES:
+        png_file = f"{OUTPUT_CSV_PATH}/wasting_diagnosis_{RUN_ID}.png"
+        print(f"Calculate and save wasting confusion matrix results to {png_file}")
+        start = time.time()
+        draw_wasting_diagnosis(df, png_file)
+        end = time.time()
+        print(f"Total time for Calculate zscores and save wasting confusion matrix: {end - start:.3} sec")
 
     if SEX_IDX in DATA_CONFIG.TARGET_INDEXES:
         csv_file = f"{OUTPUT_CSV_PATH}/sex_evaluation_{RUN_ID}.csv"
