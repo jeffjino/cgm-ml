@@ -20,7 +20,7 @@ jobs:
       id: cache-venv
       with:
         path: ./.venv/
-        key: ${{ runner.os }}-venv-${{ hashFiles('requirements.txt') }}
+        key: ${{ runner.os }}-venv37-${{ hashFiles('requirements.txt') }}
         restore-keys: |
           ${{ runner.os }}-venv-
     - run: python -m venv ./.venv && . ./.venv/bin/activate &&
