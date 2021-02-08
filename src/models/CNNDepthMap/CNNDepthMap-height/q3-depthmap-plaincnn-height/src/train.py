@@ -69,8 +69,14 @@ else:
     if CONFIG.DATASET_MODE == DATASET_MODE_MOUNT:
         dataset_path = sys.argv[1]  # This expects the dataset_path to be the first argument to this script
     elif CONFIG.DATASET_MODE == DATASET_MODE_DOWNLOAD:
-        dataset_path = get_dataset_path(DATA_DIR_ONLINE_RUN, dataset_name)
-        download_dataset(workspace, dataset_name, dataset_path)
+        print('Run', run)
+        print("input_datasets", run.input_datasets)
+        print("sys.argv[1]", sys.argv[1])
+        dataset_path = sys.argv[1]
+        # dataset_path = run.input_datasets['input_1']
+
+        # dataset_path = get_dataset_path(DATA_DIR_ONLINE_RUN, dataset_name)
+        # download_dataset(workspace, dataset_name, dataset_path)
     else:
         raise NameError(f"Unknown DATASET_MODE: {CONFIG.DATASET_MODE}")
 

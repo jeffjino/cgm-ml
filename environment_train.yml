@@ -7,7 +7,7 @@ dependencies:
   - python=3.7
   - pip
   - pip:
-    - azureml-core==1.18.0.post4
+    - azureml-core==1.21.0
     - numpy==1.18.5
     - pandas==0.23.4
     - imgaug==0.4.0
