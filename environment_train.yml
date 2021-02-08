@@ -20,3 +20,4 @@ dependencies:
     - evidential-deep-learning
     - wandb==0.10.14
     - PyJWT==1.7.1
+    - azureml-dataprep[pandas,fuse]
