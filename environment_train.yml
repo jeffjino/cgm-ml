@@ -6,6 +6,7 @@ dependencies:
   - wheel=0.35.1
   - python=3.7
   - pip
+  - wandb
   - pip:
     - azureml-core==1.21.0
     - numpy==1.18.5
@@ -18,7 +19,6 @@ dependencies:
     - pyyaml
     - bunch==1.0.1
     - scikit-learn==0.22.2.post1
-    - evidential-deep-learning
-    - wandb==0.10.14
     - PyJWT==1.7.1
     - azureml-dataprep[pandas,fuse]==2.8.2
+    - evidential-deep-learning
