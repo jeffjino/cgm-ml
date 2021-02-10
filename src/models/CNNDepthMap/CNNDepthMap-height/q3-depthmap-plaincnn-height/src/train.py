@@ -202,10 +202,14 @@ optimizer = get_optimizer(CONFIG.USE_ONE_CYCLE,
                           lr=CONFIG.LEARNING_RATE,
                           n_steps=len(paths_training) / CONFIG.BATCH_SIZE)
 
+def EvidentialRegressionLoss(true, pred):
+    return edl.losses.EvidentialRegression(true, pred, coeff=CONFIG.EDL_COEFF)
+
+
 # Compile the model.
 model.compile(
     optimizer=optimizer,
-    loss=edl.losses.EvidentialRegression,
+    loss=EvidentialRegressionLoss,
     metrics=["mae"]
 )
 

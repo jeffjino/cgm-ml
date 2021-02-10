@@ -18,6 +18,7 @@ CONFIG = Bunch(dict(
     USE_ONE_CYCLE=False,
     USE_DROPOUT=True,
     USE_WANDB=False,
+    EDL_COEFF=1e-2,
 
     # Parameters for dataset generation.
     TARGET_INDEXES=[0],  # 0 is height, 1 is weight.
