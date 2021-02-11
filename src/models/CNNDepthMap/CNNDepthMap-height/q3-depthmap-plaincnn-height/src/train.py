@@ -198,9 +198,10 @@ if getattr(CONFIG, 'USE_WANDB', False):
     wandb.config.update(CONFIG)
     training_callbacks.append(WandbCallback(log_weights=True, log_gradients=True, training_data=dataset_batches))
 
-optimizer = get_optimizer(CONFIG.USE_ONE_CYCLE,
-                          lr=CONFIG.LEARNING_RATE,
-                          n_steps=len(paths_training) / CONFIG.BATCH_SIZE)
+optimizer = tf.keras.optimizers.Adam(learning_rate=CONFIG.LEARNING_RATE)
+# optimizer = get_optimizer(CONFIG.USE_ONE_CYCLE,
+#                           lr=CONFIG.LEARNING_RATE,
+#                           n_steps=len(paths_training) / CONFIG.BATCH_SIZE)
 
 def EvidentialRegressionLoss(true, pred):
     return edl.losses.EvidentialRegression(true, pred, coeff=CONFIG.EDL_COEFF)
