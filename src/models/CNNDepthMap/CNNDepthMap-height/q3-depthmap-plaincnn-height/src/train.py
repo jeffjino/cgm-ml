@@ -140,8 +140,9 @@ def tf_load_pickle(path, max_value):
         depthmap = tf.image.resize(depthmap, (CONFIG.IMAGE_TARGET_HEIGHT, CONFIG.IMAGE_TARGET_WIDTH))
         targets = preprocess_targets(targets, CONFIG.TARGET_INDEXES)
         mean = 91.0
+        minimum = 40.0
         std = 9.7
-        targets = (targets - mean) / std
+        targets = (targets - minimum) / std
         return depthmap, targets
 
     depthmap, targets = tf.py_function(py_load_pickle, [path, max_value], [tf.float32, tf.float32])
