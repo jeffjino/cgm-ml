@@ -140,3 +140,49 @@ WANDB_API_KEY_MH = "237ca046c5dcd915945761dc477207549ef2c42c"
 def setup_wandb():
     wandb_login = subprocess.run(["wandb", "login", WANDB_API_KEY_MH])
     assert wandb_login.returncode == 0
+
+
+
+import numpy as np
+
+def calculate_mean_and_std(dataset, NUM_ARTIFACTS=5):
+    aaa = dataset.take(NUM_ARTIFACTS)
+    ccc = list(aaa.as_numpy_iterator())
+
+    # ccc[0][0].shape == (240, 180, 1)
+    # ccc[1][0].shape == (1,)
+
+    depthmaps = []
+    for item in ccc:
+        depthmap = item[0]
+        # print(depthmap.min(), depthmap.max())
+        depthmaps.append(depthmap)
+
+    depthmaps_np = np.array(depthmaps)  # shape (5, 240, 180, 1)
+
+    std = depthmaps_np.std()
+    mean = depthmaps_np.mean()
+    return mean, std
+
+def calculate_mean_and_std_targets(dataset, NUM_ARTIFACTS=5):
+    aaa = dataset.take(NUM_ARTIFACTS)
+    ccc = list(aaa.as_numpy_iterator())
+
+    # ccc[0][0].shape == (240, 180, 1)
+    # ccc[1][0].shape == (1,)
+
+    targets = []
+    for item in ccc:
+        target = item[1]
+        targets.append(target)
+
+    targets_np = np.array(targets)
+
+    std = targets_np.std()
+    mean = targets_np.mean()
+    minimum = targets_np.min()
+    return mean, std, minimum
+
+# mean, std = calculate_mean_and_std(dataset_training, 20000)
+# mean, std = calculate_mean_and_std_targets(dataset_training, 20000)
+# x_new = (x - mean) / std

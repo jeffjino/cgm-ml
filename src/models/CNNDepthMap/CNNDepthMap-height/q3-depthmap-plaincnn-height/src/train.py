@@ -34,7 +34,7 @@ if run.id.startswith("OfflineRun"):
 
 from model import create_cnn  # noqa: E402
 from tmp_model_util.preprocessing import preprocess_depthmap, preprocess_targets  # noqa: E402
-from tmp_model_util.utils import download_dataset, get_dataset_path, AzureLogCallback, create_tensorboard_callback, get_optimizer, setup_wandb  # noqa: E402
+from tmp_model_util.utils import calculate_mean_and_std_targets, download_dataset, get_dataset_path, AzureLogCallback, create_tensorboard_callback, get_optimizer, setup_wandb  # noqa: E402
 
 # Make experiment reproducible
 tf.random.set_seed(CONFIG.SPLIT_SEED)
@@ -164,6 +164,8 @@ dataset_norm = dataset_norm.prefetch(tf.data.experimental.AUTOTUNE)
 dataset_norm = dataset_norm.shuffle(CONFIG.SHUFFLE_BUFFER_SIZE)
 dataset_training = dataset_norm
 del dataset_norm
+
+# mean, std, minimum = calculate_mean_and_std_targets(dataset_training, 20000)
 
 # Create dataset for validation.
 # Note: No shuffle necessary.
