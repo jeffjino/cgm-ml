@@ -14,10 +14,10 @@ CONFIG = Bunch(dict(
     BATCH_SIZE=256,
     SHUFFLE_BUFFER_SIZE=2560,
     NORMALIZATION_VALUE=7.5,
-    LEARNING_RATE=0.000000007,
+    LEARNING_RATE=7e-4,
     USE_ONE_CYCLE=False,
-    USE_DROPOUT=True,
-    USE_WANDB=False,
+    USE_DROPOUT=False,
+    USE_WANDB=True,
     EDL_COEFF=1e-2,
 
     # Parameters for dataset generation.

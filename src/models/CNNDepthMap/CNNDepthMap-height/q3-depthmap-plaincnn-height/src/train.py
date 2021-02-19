@@ -207,20 +207,28 @@ if getattr(CONFIG, 'USE_WANDB', False):
     wandb.config.update(CONFIG)
     training_callbacks.append(WandbCallback(log_weights=True, log_gradients=True, training_data=dataset_batches))
 
-optimizer = tf.keras.optimizers.Adam(learning_rate=CONFIG.LEARNING_RATE)
-# optimizer = get_optimizer(CONFIG.USE_ONE_CYCLE,
-#                           lr=CONFIG.LEARNING_RATE,
-#                           n_steps=len(paths_training) / CONFIG.BATCH_SIZE)
+optimizer = tf.keras.optimizers.Adam(learning_rate=CONFIG.LEARNING_RATE, clipnorm=0.5)
 
 def EvidentialRegressionLoss(true, pred):
     return edl.losses.EvidentialRegression(true, pred, coeff=CONFIG.EDL_COEFF)
 
 
+# last layer produces: mu, v, alpha, beta
+
+def my_metric_mu(y_true, y_pred):
+    return y_pred[0]
+def my_metric_v(y_true, y_pred):
+    return y_pred[1]
+def my_metric_alpha(y_true, y_pred):
+    return y_pred[2]
+def my_metric_beta(y_true, y_pred):
+    return y_pred[3]
+
 # Compile the model.
 model.compile(
     optimizer=optimizer,
     loss=EvidentialRegressionLoss,
-    metrics=["mae"]
+    metrics=["mae", my_metric_mu, my_metric_v, my_metric_alpha, my_metric_beta]
 )
 
 # Train the model.
