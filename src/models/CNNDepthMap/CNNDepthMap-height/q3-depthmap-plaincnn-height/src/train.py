@@ -166,7 +166,7 @@ dataset_norm = dataset_norm.shuffle(CONFIG.SHUFFLE_BUFFER_SIZE)
 dataset_training = dataset_norm
 del dataset_norm
 
-# mean, std, minimum = calculate_mean_and_std_targets(dataset_training, 20000)
+# mean, std, minimum, maximum = calculate_mean_and_std_targets(dataset_training, 20000)
 
 # Create dataset for validation.
 # Note: No shuffle necessary.

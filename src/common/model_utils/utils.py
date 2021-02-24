@@ -181,7 +181,8 @@ def calculate_mean_and_std_targets(dataset, NUM_ARTIFACTS=5):
     std = targets_np.std()
     mean = targets_np.mean()
     minimum = targets_np.min()
-    return mean, std, minimum
+    maximum = targets_np.max()
+    return mean, std, minimum, maximum
 
 # mean, std = calculate_mean_and_std(dataset_training, 20000)
 # mean, std = calculate_mean_and_std_targets(dataset_training, 20000)
