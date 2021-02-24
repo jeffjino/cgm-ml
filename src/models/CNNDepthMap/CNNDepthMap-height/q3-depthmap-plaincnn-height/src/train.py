@@ -7,6 +7,7 @@ import sys
 
 import glob2 as glob
 import tensorflow as tf
+import numpy as np
 from azureml.core import Experiment, Workspace
 from azureml.core.run import Run
 import wandb
@@ -218,8 +219,48 @@ if getattr(CONFIG, 'USE_WANDB', False):
 
 optimizer = tf.keras.optimizers.Adam(learning_rate=CONFIG.LEARNING_RATE, clipnorm=0.5)
 
+def NIG_NLL(y, gamma, v, alpha, beta, reduce=True):
+    twoBlambda = 2*beta*(1+v)
+
+    nll = 0.5*tf.math.log(np.pi/v)  \
+        - alpha*tf.math.log(twoBlambda)  \
+        + (alpha+0.5) * tf.math.log(v*(y-gamma)**2 + twoBlambda)  \
+        + tf.math.lgamma(alpha)  \
+        - tf.math.lgamma(alpha+0.5)
+
+    return tf.reduce_mean(nll) if reduce else nll
+
+def KL_NIG(mu1, v1, a1, b1, mu2, v2, a2, b2):
+    KL = 0.5*(a1-1)/b1 * (v2*tf.square(mu2-mu1))  \
+        + 0.5*v2/v1  \
+        - 0.5*tf.math.log(tf.abs(v2)/tf.abs(v1))  \
+        - 0.5 + a2*tf.math.log(b1/b2)  \
+        - (tf.math.lgamma(a1) - tf.math.lgamma(a2))  \
+        + (a1 - a2)*tf.math.digamma(a1)  \
+        - (b1 - b2)*a1/b1
+    return KL
+
+def NIG_Reg(y, gamma, v, alpha, beta, omega=0.01, reduce=True, kl=False):
+    # error = tf.stop_gradient(tf.abs(y-gamma))
+    error = tf.abs(y-gamma)
+
+    if kl:
+        kl = KL_NIG(gamma, v, alpha, beta, gamma, omega, 1+omega, beta)
+        reg = error*kl
+    else:
+        evi = 2*v+(alpha)
+        reg = error*evi
+
+    return tf.reduce_mean(reg) if reduce else reg
+
+def EvidentialRegression(y_true, evidential_output, coeff=1.0):
+    gamma, v, alpha, beta = tf.split(evidential_output, 4, axis=-1)
+    loss_nll = NIG_NLL(y_true, gamma, v, alpha, beta)
+    loss_reg = NIG_Reg(y_true, gamma, v, alpha, beta)
+    return loss_nll + coeff * loss_reg
+
 def EvidentialRegressionLoss(true, pred):
-    return edl.losses.EvidentialRegression(true, pred, coeff=CONFIG.EDL_COEFF)
+    return EvidentialRegression(true, pred, coeff=CONFIG.EDL_COEFF)
 
 
 # last layer produces: mu, v, alpha, beta
