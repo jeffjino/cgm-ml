@@ -233,11 +233,16 @@ def my_metric_alpha(y_true, y_pred):
 def my_metric_beta(y_true, y_pred):
     return y_pred[3]
 
+def my_mae(y_true, y_pred):
+    y_true_ = (y_true * TARGET_STD) + TARGET_MINIMUM
+    y_pred_ = (y_pred * TARGET_STD) + TARGET_MINIMUM
+    return abs(y_true_ - y_pred_)
+
 # Compile the model.
 model.compile(
     optimizer=optimizer,
     loss=EvidentialRegressionLoss,
-    metrics=["mae", my_metric_mu, my_metric_v, my_metric_alpha, my_metric_beta]
+    metrics=['mae', my_mae, my_metric_mu, my_metric_v, my_metric_alpha, my_metric_beta]
 )
 
 # Train the model.
