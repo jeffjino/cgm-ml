@@ -127,22 +127,31 @@ del qrcode_paths_validate
 print("Using {} files for training.".format(len(paths_training)))
 print("Using {} files for validation.".format(len(paths_validate)))
 
+DEPTHMAP_MEAN = 0.18
+DEPTHMAP_STD = 0.07
+
+TARGET_MEAN = 91.0
+TARGET_MINIMUM = 40.0
+TARGET_STD = 9.7
 
 # Function for loading and processing depthmaps.
 def tf_load_pickle(path, max_value):
     def py_load_pickle(path, max_value):
         depthmap, targets = pickle.load(open(path.numpy(), "rb"))
         depthmap = preprocess_depthmap(depthmap)
-        depthmap = depthmap / max_value
-        mean = 0.18
-        std = 0.07
-        depthmap = (depthmap - mean) / std
+
+        assert_pixel_value_min = tf.Assert(tf.reduce_min(depthmap) >= 0, [path, tf.reduce_min(depthmap), depthmap])
+        assert_pixel_value_max = tf.Assert(tf.reduce_max(depthmap) < 10, [path, tf.reduce_max(depthmap), depthmap]) # 10
+        with tf.control_dependencies([assert_pixel_value_min, assert_pixel_value_max]):
+            depthmap = depthmap / max_value
+            depthmap = (depthmap - DEPTHMAP_MEAN) / DEPTHMAP_STD
         depthmap = tf.image.resize(depthmap, (CONFIG.IMAGE_TARGET_HEIGHT, CONFIG.IMAGE_TARGET_WIDTH))
+
         targets = preprocess_targets(targets, CONFIG.TARGET_INDEXES)
-        mean = 91.0
-        minimum = 40.0
-        std = 9.7
-        targets = (targets - minimum) / std
+
+        assert_child_height = tf.Assert(40 < targets < 150, [path, targets])  # Children should be between 40cm and 150cm
+        with tf.control_dependencies([assert_child_height]):
+            targets = (targets - TARGET_MINIMUM) / TARGET_STD
         return depthmap, targets
 
     depthmap, targets = tf.py_function(py_load_pickle, [path, max_value], [tf.float32, tf.float32])
