@@ -141,8 +141,8 @@ def tf_load_pickle(path, max_value):
         depthmap, targets = pickle.load(open(path.numpy(), "rb"))
         depthmap = preprocess_depthmap(depthmap)
 
-        assert_pixel_value_min = tf.Assert(tf.reduce_min(depthmap) >= 0, [path, tf.reduce_min(depthmap), depthmap])
-        assert_pixel_value_max = tf.Assert(tf.reduce_max(depthmap) < 10, [path, tf.reduce_max(depthmap), depthmap]) # 10
+        assert_pixel_value_min = tf.Assert(tf.reduce_min(depthmap) >= 0, ["assert_pixel_value_min", path, tf.reduce_min(depthmap), depthmap])
+        assert_pixel_value_max = tf.Assert(tf.reduce_max(depthmap) < 10, ["assert_pixel_value_max", path, tf.reduce_max(depthmap), depthmap])
         with tf.control_dependencies([assert_pixel_value_min, assert_pixel_value_max]):
             depthmap = depthmap / max_value
             depthmap = (depthmap - DEPTHMAP_MEAN) / DEPTHMAP_STD
@@ -150,7 +150,7 @@ def tf_load_pickle(path, max_value):
 
         targets = preprocess_targets(targets, CONFIG.TARGET_INDEXES)
 
-        assert_child_height = tf.Assert(40 < targets < 150, [path, targets])  # Children should be between 40cm and 150cm
+        assert_child_height = tf.Assert(40 < targets < 150, ["assert_child_height", path, targets])  # Children should be between 40cm and 150cm
         with tf.control_dependencies([assert_child_height]):
             targets = (targets - TARGET_MINIMUM) / TARGET_STD
         return depthmap, targets
