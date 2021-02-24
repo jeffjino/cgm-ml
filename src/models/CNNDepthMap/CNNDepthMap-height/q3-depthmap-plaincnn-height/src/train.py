@@ -90,6 +90,18 @@ qrcode_paths = glob.glob(os.path.join(dataset_path, "*"))
 print("qrcode_paths: ", len(qrcode_paths))
 assert len(qrcode_paths) != 0
 
+blacklist_qrcodes = [
+    "1585000019-syglokl9nx",  # only to test (part of mini)
+    "1585366118-qao4zsk0m3",  # b'assert_child_height', scans/1585366118-qao4zsk0m3/102/pc_1585366118-qao4zsk0m3_1593021766372_102_026.p', 12.7
+]
+qrcode_paths_filtered = []
+for qrcode_path in qrcode_paths:
+    qrcode_str = qrcode_path.split('/')[-1]
+    if qrcode_str in blacklist_qrcodes:
+        continue
+    qrcode_paths_filtered.append(qrcode_path)
+qrcode_paths = qrcode_paths_filtered
+
 # Shuffle and split into train and validate.
 random.shuffle(qrcode_paths)
 split_index = int(len(qrcode_paths) * 0.8)
