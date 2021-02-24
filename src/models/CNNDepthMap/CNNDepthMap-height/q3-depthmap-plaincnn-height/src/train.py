@@ -219,25 +219,39 @@ if getattr(CONFIG, 'USE_WANDB', False):
 
 optimizer = tf.keras.optimizers.Adam(learning_rate=CONFIG.LEARNING_RATE, clipnorm=0.5)
 
+EPSILON = 1e-7
+
 def NIG_NLL(y, gamma, v, alpha, beta, reduce=True):
+    """Each tensor is having a size of batch size"""
     twoBlambda = 2*beta*(1+v)
 
-    nll = 0.5*tf.math.log(np.pi/v)  \
-        - alpha*tf.math.log(twoBlambda)  \
-        + (alpha+0.5) * tf.math.log(v*(y-gamma)**2 + twoBlambda)  \
-        + tf.math.lgamma(alpha)  \
-        - tf.math.lgamma(alpha+0.5)
+    assert_twoBlambda = tf.Assert(tf.reduce_min(twoBlambda) > EPSILON, ["twoBlambda", twoBlambda])
+    assert_v = tf.Assert(tf.reduce_min(v) > EPSILON, ["v", v])
+    # assert_y_minus_gamma = tf.Assert(tf.reduce_min(y-gamma) > EPSILON, ["y-gamma", y-gamma])  # Breaks
+
+    with tf.control_dependencies([assert_twoBlambda, assert_v]):
+        nll = 0.5*tf.math.log(np.pi/v)  \
+            - alpha*tf.math.log(twoBlambda)  \
+            + (alpha+0.5) * tf.math.log(v*(y-gamma)**2 + twoBlambda)  \
+            + tf.math.lgamma(alpha)  \
+            - tf.math.lgamma(alpha+0.5)
 
     return tf.reduce_mean(nll) if reduce else nll
 
 def KL_NIG(mu1, v1, a1, b1, mu2, v2, a2, b2):
-    KL = 0.5*(a1-1)/b1 * (v2*tf.square(mu2-mu1))  \
-        + 0.5*v2/v1  \
-        - 0.5*tf.math.log(tf.abs(v2)/tf.abs(v1))  \
-        - 0.5 + a2*tf.math.log(b1/b2)  \
-        - (tf.math.lgamma(a1) - tf.math.lgamma(a2))  \
-        + (a1 - a2)*tf.math.digamma(a1)  \
-        - (b1 - b2)*a1/b1
+
+    assert_v1 = tf.Assert(tf.reduce_min(v1) > EPSILON, ["v1", v1])
+    assert_v2 = tf.Assert(tf.reduce_min(v2) > EPSILON, ["v2", v2])
+    assert_b1 = tf.Assert(tf.reduce_min(b1) > EPSILON, ["b1", b1])
+    assert_b2 = tf.Assert(tf.reduce_min(b2) > EPSILON, ["b2", b2])
+    with tf.control_dependencies([assert_v1, assert_v2, assert_b1, assert_b2]):
+        KL = 0.5*(a1-1)/b1 * (v2*tf.square(mu2-mu1))  \
+            + 0.5*v2/v1  \
+            - 0.5*tf.math.log(tf.abs(v2)/tf.abs(v1))  \
+            - 0.5 + a2*tf.math.log(b1/b2)  \
+            - (tf.math.lgamma(a1) - tf.math.lgamma(a2))  \
+            + (a1 - a2)*tf.math.digamma(a1)  \
+            - (b1 - b2)*a1/b1
     return KL
 
 def NIG_Reg(y, gamma, v, alpha, beta, omega=0.01, reduce=True, kl=False):
