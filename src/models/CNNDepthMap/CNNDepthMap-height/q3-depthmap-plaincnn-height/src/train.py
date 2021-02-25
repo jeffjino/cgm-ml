@@ -94,12 +94,14 @@ blacklist_qrcodes = [
     "1585000019-syglokl9nx",  # only to test (part of mini)
     #"1585366118-qao4zsk0m3",  # b'assert_child_height', scans/1585366118-qao4zsk0m3/102/pc_1585366118-qao4zsk0m3_1593021766372_102_026.p', 12.7
     #"1585360775-fa64muouel",  # b'assert_child_height', scans/1585360775-fa64muouel/202/pc_1585360775-fa64muouel_1597205960827_202_002.p', 7.9
-    '1583855791-ldfc59ywg5',
-    '1583997882-3jqstr1119',
-    '1584998372-d85ogmqucw',
-    '1585274424-3oqa4i262a',
-    '1585360775-fa64muouel',
-    '1585366118-qao4zsk0m3'
+    '1583855791-ldfc59ywg5',  # b'assert_child_height'
+    '1583997882-3jqstr1119',  # b'assert_child_height'
+    '1584998372-d85ogmqucw',  # b'assert_child_height'
+    '1585274424-3oqa4i262a',  # b'assert_child_height'
+    '1585360775-fa64muouel',  # b'assert_child_height'
+    '1585366118-qao4zsk0m3',  # b'assert_child_height'
+
+    '1585010027-xb21f31tvj',  # b'assert_pixel_value_max', b'scans/1585010027-xb21f31tvj/101/pc_1585010027-xb21f31tvj_1592674994326_101_015.p', 714286.0
 ]
 qrcode_paths_filtered = []
 for qrcode_path in qrcode_paths:
