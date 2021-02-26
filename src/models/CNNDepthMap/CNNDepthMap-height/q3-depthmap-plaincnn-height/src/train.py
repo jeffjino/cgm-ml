@@ -162,18 +162,18 @@ def tf_load_pickle(path, max_value):
         depthmap, targets = pickle.load(open(path.numpy(), "rb"))
         depthmap = preprocess_depthmap(depthmap)
 
-        assert_pixel_value_min = tf.Assert(tf.reduce_min(depthmap) >= 0, ["assert_pixel_value_min", path, tf.reduce_min(depthmap), depthmap])
-        assert_pixel_value_max = tf.Assert(tf.reduce_max(depthmap) < 10, ["assert_pixel_value_max", path, tf.reduce_max(depthmap), depthmap])
-        with tf.control_dependencies([assert_pixel_value_min, assert_pixel_value_max]):
-            depthmap = depthmap / max_value
-            depthmap = (depthmap - DEPTHMAP_MEAN) / DEPTHMAP_STD
+        # assert_pixel_value_min = tf.Assert(tf.reduce_min(depthmap) >= 0, ["assert_pixel_value_min", path, tf.reduce_min(depthmap), depthmap])
+        # assert_pixel_value_max = tf.Assert(tf.reduce_max(depthmap) < 10, ["assert_pixel_value_max", path, tf.reduce_max(depthmap), depthmap])
+        # with tf.control_dependencies([assert_pixel_value_min, assert_pixel_value_max]):
+        depthmap = depthmap / max_value
+        depthmap = (depthmap - DEPTHMAP_MEAN) / DEPTHMAP_STD
         depthmap = tf.image.resize(depthmap, (CONFIG.IMAGE_TARGET_HEIGHT, CONFIG.IMAGE_TARGET_WIDTH))
 
         targets = preprocess_targets(targets, CONFIG.TARGET_INDEXES)
 
-        assert_child_height = tf.Assert(40 < targets < 150, ["assert_child_height", path, targets])  # Children should be between 40cm and 150cm
-        with tf.control_dependencies([assert_child_height]):
-            targets = (targets - TARGET_MINIMUM) / TARGET_STD
+        # assert_child_height = tf.Assert(40 < targets < 150, ["assert_child_height", path, targets])  # Children should be between 40cm and 150cm
+        # with tf.control_dependencies([assert_child_height]):
+        targets = (targets - TARGET_MINIMUM) / TARGET_STD
         return depthmap, targets
 
     depthmap, targets = tf.py_function(py_load_pickle, [path, max_value], [tf.float32, tf.float32])
@@ -238,7 +238,10 @@ if getattr(CONFIG, 'USE_WANDB', False):
     wandb.config.update(CONFIG)
     training_callbacks.append(WandbCallback(log_weights=True, log_gradients=True, training_data=dataset_batches))
 
-optimizer = tf.keras.optimizers.Adam(learning_rate=CONFIG.LEARNING_RATE, clipnorm=0.5)
+if CONFIG.USE_GRADIENT_CLIPPING:
+    optimizer = tf.keras.optimizers.Adam(learning_rate=CONFIG.LEARNING_RATE, clipnorm=0.5)
+else:
+    optimizer = tf.keras.optimizers.Adam(learning_rate=CONFIG.LEARNING_RATE)
 
 EPSILON = 1e-7
 
@@ -295,7 +298,10 @@ def EvidentialRegression(y_true, evidential_output, coeff=1.0):
     return loss_nll + coeff * loss_reg
 
 def EvidentialRegressionLoss(true, pred):
-    return EvidentialRegression(true, pred, coeff=CONFIG.EDL_COEFF)
+    if CONFIG.USE_TF_ASSERT:
+        return EvidentialRegression(true, pred, coeff=CONFIG.EDL_COEFF)
+    else:
+        return edl.losses.EvidentialRegression(true, pred, coeff=CONFIG.EDL_COEFF)
 
 
 # last layer produces: mu, v, alpha, beta
