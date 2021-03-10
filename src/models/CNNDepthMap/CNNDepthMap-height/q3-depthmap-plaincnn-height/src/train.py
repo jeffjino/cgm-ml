@@ -152,8 +152,7 @@ print("Using {} files for validation.".format(len(paths_validate)))
 DEPTHMAP_MEAN = 0.18
 DEPTHMAP_STD = 0.07
 
-TARGET_MEAN = 91.0
-TARGET_MINIMUM = 40.0
+TARGET_MEAN = 91.0  # TARGET_MINIMUM = 40.0
 TARGET_STD = 9.7
 
 # Function for loading and processing depthmaps.
@@ -173,7 +172,7 @@ def tf_load_pickle(path, max_value):
 
         # assert_child_height = tf.Assert(40 < targets < 150, ["assert_child_height", path, targets])  # Children should be between 40cm and 150cm
         # with tf.control_dependencies([assert_child_height]):
-        targets = (targets - TARGET_MINIMUM) / TARGET_STD
+        targets = (targets - TARGET_MEAN) / TARGET_STD
         return depthmap, targets
 
     depthmap, targets = tf.py_function(py_load_pickle, [path, max_value], [tf.float32, tf.float32])
@@ -316,8 +315,8 @@ def my_metric_beta(y_true, y_pred):
     return y_pred[3]
 
 def my_mae(y_true, y_pred):
-    y_true_ = (y_true * TARGET_STD) + TARGET_MINIMUM
-    y_pred_ = (y_pred * TARGET_STD) + TARGET_MINIMUM
+    y_true_ = (y_true * TARGET_STD) + TARGET_MEAN
+    y_pred_ = (y_pred * TARGET_STD) + TARGET_MEAN
     return abs(y_true_ - y_pred_)
 
 # Compile the model.
