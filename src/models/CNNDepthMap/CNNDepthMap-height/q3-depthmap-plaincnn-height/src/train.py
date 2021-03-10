@@ -306,24 +306,39 @@ def EvidentialRegressionLoss(true, pred):
 # last layer produces: mu, v, alpha, beta
 
 def my_metric_mu(y_true, y_pred):
-    return y_pred[0]
+    mu = (y_pred[0] * TARGET_STD) + TARGET_MEAN
+    return mu
 def my_metric_v(y_true, y_pred):
-    return y_pred[1]
+    v = y_pred[1]
+    return v
 def my_metric_alpha(y_true, y_pred):
-    return y_pred[2]
+    alpha = y_pred[2]
+    return alpha
 def my_metric_beta(y_true, y_pred):
-    return y_pred[3]
+    beta = y_pred[3]
+    return beta
+
+def my_metric_epistemic(y_true, y_pred):
+    v, alpha, beta = y_pred[1], y_pred[2], y_pred[3]
+    variance_mu = beta / (v * (alpha - 1))
+    return variance_mu
 
 def my_mae(y_true, y_pred):
+    """Calculate mean absolute error
+
+    Args:
+        y_true ([type]): shape (None, 1)
+        y_pred ([type]): shape (None, 4)
+    """
     y_true_ = (y_true * TARGET_STD) + TARGET_MEAN
-    y_pred_ = (y_pred * TARGET_STD) + TARGET_MEAN
+    y_pred_ = (y_pred[0] * TARGET_STD) + TARGET_MEAN
     return abs(y_true_ - y_pred_)
 
 # Compile the model.
 model.compile(
     optimizer=optimizer,
     loss=EvidentialRegressionLoss,
-    metrics=['mae', my_mae, my_metric_mu, my_metric_v, my_metric_alpha, my_metric_beta]
+    metrics=[my_mae, my_metric_mu, my_metric_v, my_metric_alpha, my_metric_beta, my_metric_epistemic]
 )
 
 # Train the model.
