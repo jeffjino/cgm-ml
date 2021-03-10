@@ -19,7 +19,7 @@ CONFIG = Bunch(dict(
     USE_DROPOUT=False,
     USE_WANDB=True,
     EDL_COEFF=1e-2,
-    USE_GRADIENT_CLIPPING=True,
+    USE_GRADIENT_CLIPPING=False,
     USE_TF_ASSERT=False,
 
     # Parameters for dataset generation.
