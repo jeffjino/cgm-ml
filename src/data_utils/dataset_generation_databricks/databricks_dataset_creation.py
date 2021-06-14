@@ -58,18 +58,11 @@ DBFS_DIR = f"/tmp/{ENV}"
 # MAGIC 
 # MAGIC For reading secrets, we use [secret scopes](https://docs.microsoft.com/en-us/azure/databricks/security/secrets/secret-scopes).
 # MAGIC 
-# MAGIC When we create scopes, we name it `<key vault name>-scope`. 
+# MAGIC When we create scopes in each environment (sandbox, demo/qa, prod), we name it `cgm-ml-scope`. 
 
 # COMMAND ----------
 
-if ENV == ENV_SANDBOX:
-    SECRET_SCOPE = "cgm-ml-ci-dev-mlapi-kv-scope"
-elif ENV == ENV_QA:
-    SECRET_SCOPE = "cgm-ml-ci-qa-mlapi-kv-scope"
-elif ENV == ENV_PROD:
-    SECRET_SCOPE = "cgm-ml-ci-prod-mlapi-kv-scope"
-else:
-    raise Exception(f"Unknown environment: {ENV}")
+SECRET_SCOPE = "cgm-ml-scope"
 
 # COMMAND ----------
 
