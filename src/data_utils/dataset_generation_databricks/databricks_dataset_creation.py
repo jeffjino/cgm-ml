@@ -83,9 +83,9 @@ SECRET_SCOPE = "cgm-ml-scope"
 
 # COMMAND ----------
 
-host = dbutils.secrets.get(scope=SECRET_SCOPE, key="mlapi-appsetting-db-host")
-user = dbutils.secrets.get(scope=SECRET_SCOPE, key="mlapi-appsetting-db-user")
-password = dbutils.secrets.get(scope=SECRET_SCOPE, key="mlapi-appsetting-db-pw")
+host = dbutils.secrets.get(scope=SECRET_SCOPE, key="mlapi-db-host")
+user = dbutils.secrets.get(scope=SECRET_SCOPE, key="mlapi-db-user")
+password = dbutils.secrets.get(scope=SECRET_SCOPE, key="mlapi-db-pw")
 
 conn = psycopg2.connect(host=host, database='cgm-ml', user=user, password=password)
 
@@ -169,13 +169,13 @@ idx2col = {i: col.name for i, col in enumerate(column_names)}; print(idx2col)
 
 # COMMAND ----------
 
-CONNECTION_STR = dbutils.secrets.get(scope=SECRET_SCOPE, key="mlapi-appsetting-sa-connectionstring")
-STORAGE_ACCOUNT_NAME = dbutils.secrets.get(scope=SECRET_SCOPE, key="mlapi-appsetting-sa-name")
-CONTAINER_NAME = "cgm-result"
+CONNECTION_STR_SRC_SA = dbutils.secrets.get(scope=SECRET_SCOPE, key="mlapi-sa-connectionstring")
+# STORAGE_ACCOUNT_NAME = dbutils.secrets.get(scope=SECRET_SCOPE, key="mlapi-sa-name")
+CONTAINER_NAME_SRC_SA = "cgm-result"
 
 # COMMAND ----------
 
-BLOB_SERVICE_CLIENT = BlobServiceClient.from_connection_string(CONNECTION_STR)
+BLOB_SERVICE_CLIENT = BlobServiceClient.from_connection_string(CONNECTION_STR_SRC_SA)
 
 # COMMAND ----------
 
@@ -199,7 +199,7 @@ print(f"Number of files to download: {len(_file_paths)}")
 
 # Download
 for file_path in tqdm(_file_paths):
-    download_from_blob_storage(src=file_path, dest=f"/dbfs{DBFS_DIR}/{file_path}", container=CONTAINER_NAME)
+    download_from_blob_storage(src=file_path, dest=f"/dbfs{DBFS_DIR}/{file_path}", container=CONTAINER_NAME_SRC_SA)
 
 # COMMAND ----------
 
@@ -245,7 +245,10 @@ print(processed_fnames[:3])
 
 # COMMAND ----------
 
-CONTAINER_NAME_DATASET = "cgm-datasets"
+CONNECTION_STR_DEST_SA = dbutils.secrets.get(scope=SECRET_SCOPE, key="dset-sa-connectionstring")
+# STORAGE_ACCOUNT_NAME_DEST_SA = dbutils.secrets.get(scope=SECRET_SCOPE, key="dset-sa-name")
+CONTAINER_NAME_DEST_SA = "cgm-datasets"
+BLOB_SERVICE_CLIENT_DSET = BlobServiceClient.from_connection_string(CONNECTION_STR_DEST_SA)
 
 # COMMAND ----------
 
@@ -256,7 +259,7 @@ def remove_prefix(text: str, prefix: str) -> str:
 PREFIX = f"/dbfs{DBFS_DIR}/"
 
 def upload_to_blob_storage(src: str, dest_container: str, dest_fpath: str):
-    blob_client = BLOB_SERVICE_CLIENT.get_blob_client(container=dest_container, blob=dest_fpath)
+    blob_client = BLOB_SERVICE_CLIENT_DSET.get_blob_client(container=dest_container, blob=dest_fpath)
     with open(src, "rb") as data:
         blob_client.upload_blob(data, overwrite=False)
 
@@ -268,7 +271,7 @@ dest_dir = datetime.now(timezone.utc).strftime(f"{DATASET_NAME}-%Y-%m-%d-%H-%M-%
 def _upload(full_name):
     assert PREFIX in full_name, full_name
     dest_fpath = os.path.join(dest_dir, remove_prefix(full_name, PREFIX))
-    upload_to_blob_storage(src=full_name, dest_container=CONTAINER_NAME_DATASET, dest_fpath=dest_fpath)
+    upload_to_blob_storage(src=full_name, dest_container=CONTAINER_NAME_DEST_SA, dest_fpath=dest_fpath)
 
 NUM_THREADS = 8
 pool = ThreadPool(NUM_THREADS)
