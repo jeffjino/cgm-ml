@@ -15,7 +15,7 @@ logging.basicConfig(level=logging.INFO,
 
 
 def get_optimizer(use_one_cycle: bool, lr: float,
-                  n_steps: int) -> tf.python.keras.optimizer_v2.optimizer_v2.OptimizerV2:
+                  n_steps: int):
     if use_one_cycle:
         lr_schedule = tfa.optimizers.TriangularCyclicalLearningRate(
             initial_learning_rate=lr / 100,
