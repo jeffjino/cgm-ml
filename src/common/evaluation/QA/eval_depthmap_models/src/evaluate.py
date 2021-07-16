@@ -97,11 +97,9 @@ RUN_ID = MODEL_CONFIG.RUN_ID if getattr(MODEL_CONFIG, 'RUN_ID', False) else None
 RUN_IDS = MODEL_CONFIG.RUN_IDS if getattr(MODEL_CONFIG, 'RUN_IDS', False) else None
 assert bool(RUN_ID) != bool(RUN_IDS), 'RUN_ID xor RUN_IDS needs to be defined'
 
-# Function for loading and processing depthmaps.
-
 
 def tf_load_pickle(path, max_value):
-    """Utility to load the depthmap pickle file"""
+    """Utility to load the depthmap (may include RGB) pickle file"""
     def py_load_pickle(path, max_value):
         if FILTER_CONFIG is not None:
             depthmap, targets, _image = pickle.load(open(path.numpy(), "rb"))  # for filter (Contains RGBs)
@@ -236,6 +234,7 @@ if __name__ == "__main__":
         dataset_path = get_dataset_path(DATA_DIR_ONLINE_RUN, dataset_name)
         download_dataset(workspace, dataset_name, dataset_path)
 
+    input_location = os.path.join(MODEL_CONFIG.INPUT_LOCATION, MODEL_CONFIG.NAME)
     if RUN_IDS is not None:
         for run_id in RUN_IDS:
             logging.info(f"Downloading run {run_id}")
@@ -243,17 +242,23 @@ if __name__ == "__main__":
                 workspace=workspace,
                 experiment_name=MODEL_CONFIG.EXPERIMENT_NAME,
                 run_id=run_id,
-                input_location=os.path.join(MODEL_CONFIG.INPUT_LOCATION, MODEL_CONFIG.NAME),
+                input_location=input_location,
                 output_location=MODEL_BASE_DIR / run_id
             )
-
         model_paths = glob.glob(os.path.join(MODEL_BASE_DIR, "*"))
         model_paths = [path for path in model_paths if os.path.isdir(path)]
         model_paths = [path for path in model_paths if path.split("/")[-1].startswith(MODEL_CONFIG.EXPERIMENT_NAME)]
-        model_paths = [os.path.join(path, "outputs", "best_model.ckpt") for path in model_paths]
+        model_paths = [os.path.join(path, MODEL_CONFIG.INPUT_LOCATION, MODEL_CONFIG.NAME) for path in model_paths]
         logging.info(f"Models paths ({len(model_paths)}):")
         logging.info("\t" + "\n\t".join(model_paths))
     else:
+        logging.info(f"Model will download from '{input_location}' to '{MODEL_BASE_DIR}'")
+        download_model(workspace=workspace,
+                       experiment_name=MODEL_CONFIG.EXPERIMENT_NAME,
+                       run_id=MODEL_CONFIG.RUN_ID,
+                       input_location=input_location,
+                       output_location=MODEL_BASE_DIR)
+        logging.info("Model was downloaded")
         model_path = MODEL_BASE_DIR / get_model_path(MODEL_CONFIG)
 
     # Get the QR-code paths.

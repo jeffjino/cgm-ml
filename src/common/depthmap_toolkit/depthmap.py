@@ -2,16 +2,17 @@ import zipfile
 import logging
 import logging.config
 import math
+import sys
 
 from pathlib import Path
 import statistics
 import numpy as np
 from PIL import Image
-from typing import List, Tuple
+from typing import List
 
 from depthmap_utils import (
     matrix_calculate, IDENTITY_MATRIX_4D, parse_numbers, diff, cross, norm, matrix_transform_point)
-from constants import EXTRACTED_DEPTH_FILE_NAME, MASK_FLOOR, MASK_CHILD
+from constants import EXTRACTED_DEPTH_FILE_NAME, MASK_FLOOR, MASK_CHILD, MASK_INVALID
 
 logging.basicConfig(
     level=logging.INFO,
@@ -32,7 +33,7 @@ class Depthmap:
     """Depthmap and optional RGB
 
     Args:
-        intrinsics (np.array): Camera intrinsics
+        intrinsic (np.array): Camera intrinsic
         width (int): Width of the depthmap
         height (int): Height of the depthmap
         data (bytes): pixel_data
@@ -41,11 +42,12 @@ class Depthmap:
                                 (e.g. 0 to 255 in Lenovo, new standard is 0 to 7)
                                 This is actually an int.
         matrix (list): Header contains a pose (= position and rotation)
-                       - matrix is a list represenation of this pose
+                       - matrix is a list representation of this pose
                        - can be used to project into a different space
         rgb_fpath (str): Path to RGB file (e.g. to the jpg)
         rgb_array (np.array): RGB data
     """
+
     def __init__(
             self,
             intrinsics,
@@ -123,9 +125,9 @@ class Depthmap:
                    )
 
     def calculate_normal_vector(self, x: float, y: float) -> list:
-        """Calculate normal vector of depthmap point based on neightbors"""
+        """Calculate normal vector of depthmap point based on neighbors"""
 
-        # Get depth of the neightbor pixels
+        # Get depth of the neighbor pixels
         depth_center = self.parse_depth_smoothed(x, y)
         depth_x_minus = self.parse_depth_smoothed(x - 1, y)
         depth_y_minus = self.parse_depth_smoothed(x, y - 1)
@@ -171,48 +173,86 @@ class Depthmap:
             pass
         return res
 
-    def detect_child(self, floor: float) -> Tuple[np.array, float]:
+    def detect_child(self, floor: float) -> np.array:
 
-        # mask the floor
+        mask, segments = self.detect_objects(floor)
+
+        # Select the most focused segment
+        closest = sys.maxsize
+        focus = -1
+        for segment in segments:
+            a = segment[1][0] - int(self.width / 2)
+            b = segment[1][1] - int(self.height / 2)
+            c = segment[1][2] - int(self.width / 2)
+            d = segment[1][3] - int(self.height / 2)
+            distance = a * a + b * b + c * c + d * d
+            if closest > distance:
+                closest = distance
+                focus = segment[0]
+
+        mask = np.where(mask == focus, MASK_CHILD, mask)
+
+        return mask
+
+    def detect_floor(self, floor: float) -> np.array:
         mask = np.zeros((self.width, self.height))
         for x in range(self.width):
             for y in range(self.height):
-                depth = self.parse_depth(x, y)
+                depth = self.parse_depth_smoothed(x, y)
                 if not depth:
+                    mask[x][y] = MASK_INVALID
                     continue
                 normal = self.calculate_normal_vector(x, y)
                 point = self.convert_2d_to_3d_oriented(1, x, y, depth)
-                if abs(normal[1]) > 0.5:
-                    if abs(point[1] - floor) < 0.1:
-                        mask[x][y] = MASK_FLOOR
+                if abs(normal[1]) > 0.5 and abs(point[1] - floor) < 0.1:
+                    mask[x][y] = MASK_FLOOR
 
-        # highlight the focused child/object using seed algorithm
-        highest = floor
+        return mask
+
+    def detect_objects(self, floor: float) -> [np.array, list]:
+
+        # Detect objects/children using seed algorithm
+        current = -1
+        segments = []
         dirs = [[-1, 0], [1, 0], [0, -1], [0, 1]]
-        pixel = [int(self.width / 2), int(self.height / 2)]
-        stack = [pixel]
-        while len(stack) > 0:
+        mask = self.detect_floor(floor)
+        for x in range(self.width):
+            for y in range(self.height):
+                if mask[x][y] != 0:
+                    continue
+                pixel = [x, y]
+                aabb = [pixel[0], pixel[1], pixel[0], pixel[1]]
+                stack = [pixel]
+                while len(stack) > 0:
 
-            # get a next pixel from the stack
-            pixel = stack.pop()
-            depth_center = self.parse_depth(pixel[0], pixel[1])
+                    # Get a next pixel from the stack
+                    pixel = stack.pop()
+                    depth_center = self.parse_depth(pixel[0], pixel[1])
 
-            # add neighbor points (if there is no floor and they are connected)
-            if mask[pixel[0]][pixel[1]] == 0:
-                for direction in dirs:
-                    pixel_dir = [pixel[0] + direction[0], pixel[1] + direction[1]]
-                    depth_dir = self.parse_depth(pixel_dir[0], pixel_dir[1])
-                    if depth_dir > 0 and (depth_dir - depth_center) < 0.1:
-                        stack.append(pixel_dir)
+                    # Add neighbor points (if there is no floor and they are connected)
+                    if mask[pixel[0]][pixel[1]] == 0:
+                        for direction in dirs:
+                            pixel_dir = [pixel[0] + direction[0], pixel[1] + direction[1]]
+                            depth_dir = self.parse_depth(pixel_dir[0], pixel_dir[1])
+                            if depth_dir > 0 and abs(depth_dir - depth_center) < 0.1:
+                                stack.append(pixel_dir)
 
-            # update the highest point
-            point = self.convert_2d_to_3d_oriented(1, pixel[0], pixel[1], depth_center)
-            highest = max(highest, point[1])
+                    # Update AABB
+                    aabb[0] = min(pixel[0], aabb[0])
+                    aabb[1] = min(pixel[1], aabb[1])
+                    aabb[2] = max(pixel[0], aabb[2])
+                    aabb[3] = max(pixel[1], aabb[3])
 
-            # update the mask
-            mask[pixel[0]][pixel[1]] = MASK_CHILD
+                    # Update the mask
+                    mask[pixel[0]][pixel[1]] = current
 
-        return mask, highest
+                # Check if the object size is valid
+                object_size_pixels = max(aabb[2] - aabb[0], aabb[3] - aabb[1])
+                if object_size_pixels > self.width / 4:
+                    segments.append([current, aabb])
+                current = current - 1
+
+        return mask, segments
 
     def get_angle_between_camera_and_floor(self) -> float:
         """Calculate an angle between camera and floor based on device pose"""
@@ -234,6 +274,17 @@ class Depthmap:
                     altitudes.append(point[1])
         return statistics.median(altitudes)
 
+    def get_highest_point(self, mask: np.array) -> list:
+        highest = [-sys.maxsize, -sys.maxsize, -sys.maxsize]
+        for x in range(self.width):
+            for y in range(self.height):
+                if mask[x][y] == MASK_CHILD:
+                    depth = self.parse_depth(x, y)
+                    point = self.convert_2d_to_3d_oriented(1, x, y, depth)
+                    if highest[1] < point[1]:
+                        highest = point
+        return highest
+
     def parse_confidence(self, tx: int, ty):
         """Get confidence of the point in scale 0-1"""
         return self.data[(int(ty) * self.width + int(tx)) * 3 + 2] / self.max_confidence
@@ -249,11 +300,19 @@ class Depthmap:
 
     def parse_depth_smoothed(self, tx: int, ty) -> float:
         """Get average depth value from neighboring pixels"""
+
+        # Get all neighbor depths
         depth_center = self.parse_depth(tx, ty)
         depth_x_minus = self.parse_depth(tx - 1, ty)
         depth_x_plus = self.parse_depth(tx + 1, ty)
         depth_y_minus = self.parse_depth(tx, ty - 1)
         depth_y_plus = self.parse_depth(tx, ty + 1)
+
+        # Ensure the depth is defined
+        if 0 in [depth_center, depth_x_plus, depth_y_minus, depth_y_plus]:
+            return 0
+
+        # Average the depth value
         depths = [depth_x_minus, depth_x_plus, depth_y_minus, depth_y_plus, depth_center]
         return sum(depths) / len(depths)
 

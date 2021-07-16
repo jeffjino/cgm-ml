@@ -412,7 +412,7 @@ def get_model_path(MODEL_CONFIG: Bunch) -> str:
     if MODEL_CONFIG.NAME.endswith(".h5"):
         return MODEL_CONFIG.NAME
     if MODEL_CONFIG.NAME.endswith(".ckpt"):
-        return f"{MODEL_CONFIG.INPUT_LOCATION}/{MODEL_CONFIG.NAME}"
+        return os.path.join(MODEL_CONFIG.INPUT_LOCATION, MODEL_CONFIG.NAME)
     raise NameError(f"{MODEL_CONFIG.NAME}'s path extension not supported")
 
 
@@ -435,6 +435,7 @@ def download_model(workspace, experiment_name, run_id, input_location, output_lo
         run.download_files(prefix=input_location, output_directory=output_location)
     else:
         raise NameError(f"{input_location}'s path extension not supported")
+
     logging.info("Successfully downloaded model")
 
 
