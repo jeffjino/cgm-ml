@@ -62,12 +62,12 @@ class Depthmap:
         self.width = width
         self.height = height
         self.data = data
-        self.depthmap_arr = self._parse_data()
-        self.confidence_arr = self._parse_confidence_data()
         self.depth_scale = depth_scale
         self.max_confidence = max_confidence
         self.matrix = matrix
         self.rgb_array = rgb_array
+        self.depthmap_arr = self._parse_data()
+        self.confidence_arr = self._parse_confidence_data()
 
     @property
     def has_rgb(self) -> bool:
