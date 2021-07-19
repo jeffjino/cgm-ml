@@ -41,8 +41,9 @@ class Depthmap:
         max_confidence (float): Confidence is amount of IR light reflected
                                 (e.g. 0 to 255 in Lenovo, new standard is 0 to 7)
                                 This is actually an int.
-        matrix (List[float]): Header contains a pose (= position and rotation)
-                              - matrix is a list representation of this pose
+        matrix (List[float]): The device pose (= position and rotation)
+                              The ZIP-file header contains this pose
+                              - `matrix` is a list representation of this pose
                               - can be used to project into a different space
         rgb_array (np.array): RGB data
     """
@@ -134,13 +135,12 @@ class Depthmap:
                           depthmap_arr: np.array,
                           rgb_arr: np.array,
                           calibration_file: str) -> 'Depthmap':
-        matrix = IDENTITY_MATRIX_4D  # TODO check with Lubos
         intrinsics = parse_calibration(calibration_file)
-
         height, width = depthmap_arr.shape
         data = None  # bytes
         depth_scale = 0.001
         max_confidence = 7.0
+        matrix = None
         rgb_array = rgb_arr
 
         return cls(intrinsics,
@@ -195,6 +195,9 @@ class Depthmap:
         if is_google_tango_resolution(self.width, self.height):
             res = [-res[0], -res[1], -res[2]]
 
+        if not self.matrix:
+            logging.warn("Device pose (`matrix`) was not provided.")
+            return res
         try:
             res = matrix_transform_point(res, self.matrix)
             res = [res[0], -res[1], res[2]]
