@@ -129,7 +129,30 @@ class Depthmap:
                    rgb_array
                    )
 
+    @classmethod
+    def create_from_array(cls,
+                          depthmap_arr: np.array,
+                          rgb_arr: np.array,
+                          calibration_file: str) -> 'Depthmap':
+        matrix = IDENTITY_MATRIX_4D  # TODO check with Lubos
+        intrinsics = parse_calibration(calibration_file)
 
+        height, width = depthmap_arr.shape
+        data = None  # bytes
+        depth_scale = 0.001
+        max_confidence = 7.0
+        rgb_array = rgb_arr
+
+        return cls(intrinsics,
+                   width,
+                   height,
+                   data,
+                   depthmap_arr,
+                   depth_scale,
+                   max_confidence,
+                   matrix,
+                   rgb_array,
+                   )
 
     def calculate_normal_vector(self, x: float, y: float) -> list:
         """Calculate normal vector of depthmap point based on neighbors"""
@@ -342,7 +365,7 @@ class Depthmap:
         depths = [depth_x_minus, depth_x_plus, depth_y_minus, depth_y_plus, depth_center]
         return sum(depths) / len(depths)
 
-    def convert_3d_to_2d(self, sensor: int, x: float, y: float, depth: float) -> list:
+    def convert_3d_to_2d(self, sensor: int, x: float, y: float, depth: float) -> list:  # TODO unused
         """Convert point in meters into point in pixels
 
         Args:
