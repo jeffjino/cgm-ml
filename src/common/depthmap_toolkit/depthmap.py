@@ -3,12 +3,12 @@ import logging
 import logging.config
 import math
 import sys
-
+from typing import List, Tuple
 from pathlib import Path
 import statistics
+
 import numpy as np
 from PIL import Image
-from typing import List
 
 from depthmap_utils import (
     matrix_calculate, IDENTITY_MATRIX_4D, parse_numbers, diff, cross, norm, matrix_transform_point)
@@ -77,7 +77,7 @@ class Depthmap:
                          depthmap_dir: str,
                          depthmap_fname: str,
                          rgb_fname: str,
-                         calibration_file: str):
+                         calibration_file: str) -> 'Depthmap':
 
         # read depthmap data
         path = extract_depthmap(depthmap_dir, depthmap_fname)
@@ -205,8 +205,7 @@ class Depthmap:
 
         return mask
 
-    def detect_objects(self, floor: float) -> [np.array, list]:
-
+    def detect_objects(self, floor: float) -> Tuple[np.array, list]:
         # Detect objects/children using seed algorithm
         current = -1
         segments = []
@@ -281,7 +280,7 @@ class Depthmap:
                         highest = point
         return highest
 
-    def parse_confidence(self, tx: int, ty):
+    def parse_confidence(self, tx: int, ty) -> float:
         """Get confidence of the point in scale 0-1"""
         return self.data[(int(ty) * self.width + int(tx)) * 3 + 2] / self.max_confidence
 
@@ -327,7 +326,7 @@ class Depthmap:
         return convert_3d_to_2d(self.intrinsics[sensor], x, y, depth, self.width, self.height)
 
 
-def convert_3d_to_2d(intrinsics: list, x: float, y: float, depth: float, width: int, height: int):
+def convert_3d_to_2d(intrinsics: list, x: float, y: float, depth: float, width: int, height: int) -> list:
     fx = intrinsics[0] * float(width)
     fy = intrinsics[1] * float(height)
     cx = intrinsics[2] * float(width)
