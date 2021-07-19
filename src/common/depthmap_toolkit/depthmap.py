@@ -57,7 +57,6 @@ class Depthmap:
             depth_scale,
             max_confidence,
             matrix,
-            rgb_fpath,
             rgb_array):
         self.intrinsics = intrinsics
         self.width = width
@@ -66,7 +65,6 @@ class Depthmap:
         self.depth_scale = depth_scale
         self.max_confidence = max_confidence
         self.matrix = matrix
-        self.rgb_fpath = rgb_fpath
         self.rgb_array = rgb_array
 
     @property
@@ -120,7 +118,6 @@ class Depthmap:
                    depth_scale,
                    max_confidence,
                    matrix,
-                   rgb_fpath,
                    rgb_array
                    )
 
@@ -174,7 +171,6 @@ class Depthmap:
         return res
 
     def detect_child(self, floor: float) -> np.array:
-
         mask, segments = self.detect_objects(floor)
 
         # Select the most focused segment
