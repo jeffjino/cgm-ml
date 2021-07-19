@@ -62,6 +62,7 @@ class Depthmap:
         self.width = width
         self.height = height
         self.data = data
+        self.depthmap_arr = self.parse_data()
         self.depth_scale = depth_scale
         self.max_confidence = max_confidence
         self.matrix = matrix
@@ -120,6 +121,13 @@ class Depthmap:
                    matrix,
                    rgb_array
                    )
+
+    def parse_data(self) -> np.array:
+        output = np.zeros((self.width, self.height))
+        for x in range(self.width):
+            for y in range(self.height):
+                output[x,y] = self.parse_depth(x, y)
+        return output
 
     def calculate_normal_vector(self, x: float, y: float) -> list:
         """Calculate normal vector of depthmap point based on neighbors"""
