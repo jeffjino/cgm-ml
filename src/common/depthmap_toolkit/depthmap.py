@@ -45,6 +45,7 @@ class Depthmap:
                               The ZIP-file header contains this pose
                               - `matrix` is a list representation of this pose
                               - can be used to project into a different space
+        rgb_fpath (str): Path to RGB file (e.g. to the jpg)
         rgb_array (np.array): RGB data
     """
 
@@ -58,6 +59,7 @@ class Depthmap:
             depth_scale: float,
             max_confidence: float,
             matrix: List[float],
+            rgb_fpath: Path,
             rgb_array: np.array):
         """Constructor
 
@@ -69,6 +71,7 @@ class Depthmap:
         self.depth_scale = depth_scale
         self.max_confidence = max_confidence
         self.matrix = matrix
+        self.rgb_fpath = rgb_fpath
         self.rgb_array = rgb_array
         assert depthmap_arr is None or data is None
         self.depthmap_arr = self._parse_depth_data(data) if data else depthmap_arr
@@ -107,7 +110,7 @@ class Depthmap:
 
         # read rgb data
         if rgb_fname:
-            rgb_fpath = depthmap_dir + '/rgb/' + rgb_fname
+            rgb_fpath = Path(depthmap_dir) / 'rgb' / rgb_fname
             pil_im = Image.open(rgb_fpath)
             pil_im = pil_im.resize((width, height), Image.ANTIALIAS)
             rgb_array = np.asarray(pil_im)
@@ -127,6 +130,7 @@ class Depthmap:
                    depth_scale,
                    max_confidence,
                    matrix,
+                   rgb_fpath,
                    rgb_array
                    )
 
@@ -141,6 +145,7 @@ class Depthmap:
         depth_scale = 0.001
         max_confidence = 7.0
         matrix = None
+        rgb_fpath = None
         rgb_array = rgb_arr
 
         return cls(intrinsics,
@@ -151,6 +156,7 @@ class Depthmap:
                    depth_scale,
                    max_confidence,
                    matrix,
+                   rgb_fpath,
                    rgb_array,
                    )
 
