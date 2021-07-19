@@ -62,7 +62,8 @@ class Depthmap:
         self.width = width
         self.height = height
         self.data = data
-        self.depthmap_arr = self.parse_data()
+        self.depthmap_arr = self._parse_data()
+        self.confidence_arr = self._parse_confidence_data()
         self.depth_scale = depth_scale
         self.max_confidence = max_confidence
         self.matrix = matrix
@@ -122,11 +123,18 @@ class Depthmap:
                    rgb_array
                    )
 
-    def parse_data(self) -> np.array:
+    def _parse_data(self) -> np.array:
         output = np.zeros((self.width, self.height))
         for x in range(self.width):
             for y in range(self.height):
-                output[x,y] = self.parse_depth(x, y)
+                output[x,y] = self._parse_depth(x, y)
+        return output
+
+    def _parse_confidence_data(self) -> np.array:
+        output = np.zeros((self.width, self.height))
+        for x in range(self.width):
+            for y in range(self.height):
+                output[x,y] = self._parse_confidence(x, y)
         return output
 
     def calculate_normal_vector(self, x: float, y: float) -> list:
@@ -230,13 +238,13 @@ class Depthmap:
 
                     # Get a next pixel from the stack
                     pixel = stack.pop()
-                    depth_center = self.parse_depth(pixel[0], pixel[1])
+                    depth_center = self.depthmap_arr[pixel[0], pixel[1]]
 
                     # Add neighbor points (if there is no floor and they are connected)
                     if mask[pixel[0]][pixel[1]] == 0:
                         for direction in dirs:
                             pixel_dir = [pixel[0] + direction[0], pixel[1] + direction[1]]
-                            depth_dir = self.parse_depth(pixel_dir[0], pixel_dir[1])
+                            depth_dir = self.depthmap_arr[pixel_dir[0], pixel_dir[1]]
                             if depth_dir > 0 and abs(depth_dir - depth_center) < 0.1:
                                 stack.append(pixel_dir)
 
@@ -272,7 +280,7 @@ class Depthmap:
             for y in range(self.height):
                 normal = self.calculate_normal_vector(x, y)
                 if abs(normal[1]) > 0.5:
-                    depth = self.parse_depth(x, y)
+                    depth = self.depthmap_arr[x, y]
                     point = self.convert_2d_to_3d_oriented(1, x, y, depth)
                     altitudes.append(point[1])
         return statistics.median(altitudes)
@@ -282,17 +290,17 @@ class Depthmap:
         for x in range(self.width):
             for y in range(self.height):
                 if mask[x][y] == MASK_CHILD:
-                    depth = self.parse_depth(x, y)
+                    depth = self.depthmap_arr[x, y]
                     point = self.convert_2d_to_3d_oriented(1, x, y, depth)
                     if highest[1] < point[1]:
                         highest = point
         return highest
 
-    def parse_confidence(self, tx: int, ty) -> float:
+    def _parse_confidence(self, tx: int, ty) -> float:
         """Get confidence of the point in scale 0-1"""
         return self.data[(int(ty) * self.width + int(tx)) * 3 + 2] / self.max_confidence
 
-    def parse_depth(self, tx: int, ty: int) -> float:
+    def _parse_depth(self, tx: int, ty: int) -> float:
         """Get depth of the point in meters"""
         if tx < 1 or ty < 1 or tx >= self.width or ty >= self.height:
             return 0.
@@ -305,11 +313,11 @@ class Depthmap:
         """Get average depth value from neighboring pixels"""
 
         # Get all neighbor depths
-        depth_center = self.parse_depth(tx, ty)
-        depth_x_minus = self.parse_depth(tx - 1, ty)
-        depth_x_plus = self.parse_depth(tx + 1, ty)
-        depth_y_minus = self.parse_depth(tx, ty - 1)
-        depth_y_plus = self.parse_depth(tx, ty + 1)
+        depth_center = self.depthmap_arr[tx, ty]
+        depth_x_minus = self.depthmap_arr[tx - 1, ty]
+        depth_x_plus = self.depthmap_arr[tx + 1, ty]
+        depth_y_minus = self.depthmap_arr[tx, ty - 1]
+        depth_y_plus = self.depthmap_arr[tx, ty + 1]
 
         # Ensure the depth is defined
         if 0 in [depth_center, depth_x_plus, depth_y_minus, depth_y_plus]:

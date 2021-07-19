@@ -34,7 +34,7 @@ def onclick(event):
         x = int(event.ydata)
         y = DMAP.height - int(event.xdata) - 1
         if x > 1 and y > 1 and x < DMAP.width - 2 and y < DMAP.height - 2:
-            depth = DMAP.parse_depth(x, y)
+            depth = DMAP.depthmap_arr[x, y]
             if depth:
                 res = DMAP.convert_2d_to_3d(1, x, y, depth)
                 if res:
