@@ -3,7 +3,7 @@ import logging
 import logging.config
 import math
 import sys
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 from pathlib import Path
 import statistics
 
@@ -41,33 +41,37 @@ class Depthmap:
         max_confidence (float): Confidence is amount of IR light reflected
                                 (e.g. 0 to 255 in Lenovo, new standard is 0 to 7)
                                 This is actually an int.
-        matrix (list): Header contains a pose (= position and rotation)
-                       - matrix is a list representation of this pose
-                       - can be used to project into a different space
-        rgb_fpath (str): Path to RGB file (e.g. to the jpg)
+        matrix (List[float]): Header contains a pose (= position and rotation)
+                              - matrix is a list representation of this pose
+                              - can be used to project into a different space
         rgb_array (np.array): RGB data
     """
 
     def __init__(
             self,
-            intrinsics,
-            width,
-            height,
-            data,
-            depth_scale,
-            max_confidence,
-            matrix,
-            rgb_array):
+            intrinsics: np.array,
+            width: int,
+            height: int,
+            data: Optional[bytes],
+            depthmap_arr: Optional[np.array],
+            depth_scale: float,
+            max_confidence: float,
+            matrix: List[float],
+            rgb_array: np.array):
+        """Constructor
+
+        Either `data` or `depthmap_arr` has to be defined
+        """
         self.intrinsics = intrinsics
         self.width = width
         self.height = height
-        self.data = data
         self.depth_scale = depth_scale
         self.max_confidence = max_confidence
         self.matrix = matrix
         self.rgb_array = rgb_array
-        self.depthmap_arr = self._parse_data()
-        self.confidence_arr = self._parse_confidence_data()
+        assert depthmap_arr is None or data is None
+        self.depthmap_arr = self._parse_depth_data(data) if data else depthmap_arr
+        self.confidence_arr = self._parse_confidence_data(data) if data else None
 
     @property
     def has_rgb(self) -> bool:
@@ -112,30 +116,20 @@ class Depthmap:
 
         # read calibration file
         intrinsics = parse_calibration(calibration_file)
+        depthmap_arr = None
 
         return cls(intrinsics,
                    width,
                    height,
                    data,
+                   depthmap_arr,
                    depth_scale,
                    max_confidence,
                    matrix,
                    rgb_array
                    )
 
-    def _parse_data(self) -> np.array:
-        output = np.zeros((self.width, self.height))
-        for x in range(self.width):
-            for y in range(self.height):
-                output[x, y] = self._parse_depth(x, y)
-        return output
 
-    def _parse_confidence_data(self) -> np.array:
-        output = np.zeros((self.width, self.height))
-        for x in range(self.width):
-            for y in range(self.height):
-                output[x, y] = self._parse_confidence(x, y)
-        return output
 
     def calculate_normal_vector(self, x: float, y: float) -> list:
         """Calculate normal vector of depthmap point based on neighbors"""
@@ -296,16 +290,30 @@ class Depthmap:
                         highest = point
         return highest
 
-    def _parse_confidence(self, tx: int, ty) -> float:
-        """Get confidence of the point in scale 0-1"""
-        return self.data[(int(ty) * self.width + int(tx)) * 3 + 2] / self.max_confidence
+    def _parse_confidence_data(self, data) -> np.array:
+        output = np.zeros((self.width, self.height))
+        for x in range(self.width):
+            for y in range(self.height):
+                output[x, y] = self._parse_confidence(data, x, y)
+        return output
 
-    def _parse_depth(self, tx: int, ty: int) -> float:
+    def _parse_confidence(self, data: bytes, tx: int, ty) -> float:
+        """Get confidence of the point in scale 0-1"""
+        return data[(int(ty) * self.width + int(tx)) * 3 + 2] / self.max_confidence
+
+    def _parse_depth_data(self, data) -> np.array:
+        output = np.zeros((self.width, self.height))
+        for x in range(self.width):
+            for y in range(self.height):
+                output[x, y] = self._parse_depth(data, x, y)
+        return output
+
+    def _parse_depth(self, data: bytes, tx: int, ty: int) -> float:
         """Get depth of the point in meters"""
         if tx < 1 or ty < 1 or tx >= self.width or ty >= self.height:
             return 0.
-        depth = self.data[(int(ty) * self.width + int(tx)) * 3 + 0] << 8
-        depth += self.data[(int(ty) * self.width + int(tx)) * 3 + 1]
+        depth = data[(int(ty) * self.width + int(tx)) * 3 + 0] << 8
+        depth += data[(int(ty) * self.width + int(tx)) * 3 + 1]
         depth *= self.depth_scale
         return depth
 
@@ -317,11 +325,14 @@ class Depthmap:
             return 0.
 
         # Get all neighbor depths
-        depth_center = self.depthmap_arr[tx, ty]
-        depth_x_minus = self.depthmap_arr[tx - 1, ty]
-        depth_x_plus = self.depthmap_arr[tx + 1, ty]
-        depth_y_minus = self.depthmap_arr[tx, ty - 1]
-        depth_y_plus = self.depthmap_arr[tx, ty + 1]
+        try:
+            depth_center = self.depthmap_arr[tx, ty]
+            depth_x_minus = self.depthmap_arr[tx - 1, ty]
+            depth_x_plus = self.depthmap_arr[tx + 1, ty]
+            depth_y_minus = self.depthmap_arr[tx, ty - 1]
+            depth_y_plus = self.depthmap_arr[tx, ty + 1]
+        except IndexError:
+            return 0.
 
         # Ensure the depth is defined
         if 0 in [depth_center, depth_x_plus, depth_y_minus, depth_y_plus]:
