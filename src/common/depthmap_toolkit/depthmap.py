@@ -364,22 +364,21 @@ class Depthmap:
         depths = [depth_x_minus, depth_x_plus, depth_y_minus, depth_y_plus, depth_center]
         return sum(depths) / len(depths)
 
-    def convert_3d_to_2d(self, sensor: int, x: float, y: float, depth: float) -> list:  # TODO unused
-        """Convert point in meters into point in pixels
+
+def convert_3d_to_2d(intrinsics: list, x: float, y: float, depth: float, width: int, height: int) -> list:
+    """Convert point in meters into point in pixels
 
         Args:
-            sensor: Tells if this is ToF sensor or RGB sensor
+            intrinsics of sensor: Tells if this is ToF sensor or RGB sensor
             x: X-pos in m
             y: Y-pos in m
             depth: distance from sensor to object at (x, y)
+            width
+            height
 
         Returns:
             tx, ty, depth
         """
-        return convert_3d_to_2d(self.intrinsics[sensor], x, y, depth, self.width, self.height)
-
-
-def convert_3d_to_2d(intrinsics: list, x: float, y: float, depth: float, width: int, height: int) -> list:
     fx = intrinsics[0] * float(width)
     fy = intrinsics[1] * float(height)
     cx = intrinsics[2] * float(width)
