@@ -127,14 +127,14 @@ class Depthmap:
         output = np.zeros((self.width, self.height))
         for x in range(self.width):
             for y in range(self.height):
-                output[x,y] = self._parse_depth(x, y)
+                output[x, y] = self._parse_depth(x, y)
         return output
 
     def _parse_confidence_data(self) -> np.array:
         output = np.zeros((self.width, self.height))
         for x in range(self.width):
             for y in range(self.height):
-                output[x,y] = self._parse_confidence(x, y)
+                output[x, y] = self._parse_confidence(x, y)
         return output
 
     def calculate_normal_vector(self, x: float, y: float) -> list:
