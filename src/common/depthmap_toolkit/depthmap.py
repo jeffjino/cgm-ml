@@ -311,6 +311,10 @@ class Depthmap:
 
     def parse_depth_smoothed(self, tx: int, ty) -> float:
         """Get average depth value from neighboring pixels"""
+        if tx - 1 < 0 or ty - 1 < 0:
+            return 0.
+        if tx + 1 >= self.width or ty + 1 >= self.height:
+            return 0.
 
         # Get all neighbor depths
         depth_center = self.depthmap_arr[tx, ty]
@@ -321,7 +325,7 @@ class Depthmap:
 
         # Ensure the depth is defined
         if 0 in [depth_center, depth_x_plus, depth_y_minus, depth_y_plus]:
-            return 0
+            return 0.
 
         # Average the depth value
         depths = [depth_x_minus, depth_x_plus, depth_y_minus, depth_y_plus, depth_center]
