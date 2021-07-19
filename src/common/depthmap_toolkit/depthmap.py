@@ -191,11 +191,10 @@ class Depthmap:
         if not res:
             return res
 
-        # special case for Google Tango devices with different rotation
-        if self.width == 180 and self.height == 135:
-            res = [res[0], -res[1], res[2]]
-        else:
-            res = [-res[0], res[1], res[2]]
+        res = [-res[0], res[1], res[2]]
+        if is_google_tango_resolution(self.width, self.height):
+            res = [-res[0], -res[1], -res[2]]
+
         try:
             res = matrix_transform_point(res, self.matrix)
             res = [res[0], -res[1], res[2]]
@@ -406,3 +405,8 @@ def parse_calibration(filepath: str) -> List[List[float]]:
             intrinsic = parse_numbers(line_with_numbers)
             calibration.append(intrinsic)
     return calibration
+
+
+def is_google_tango_resolution(width, height):
+    """Check for special case for Google Tango devices with different rotation"""
+    return width == 180 and height == 135
