@@ -83,7 +83,7 @@ def show(depthmap_dir: str, calibration_file: str):
     global DMAP
     fig.canvas.manager.set_window_title(depth_filenames[INDEX])
     rgb_filename = rgb_filenames[INDEX] if rgb_filenames else 0
-    DMAP = Depthmap.create_from_file(depthmap_dir, depth_filenames[INDEX], rgb_filename, calibration_file)
+    DMAP = Depthmap.create_from_zip(depthmap_dir, depth_filenames[INDEX], rgb_filename, calibration_file)
 
     angle = DMAP.get_angle_between_camera_and_floor()
     logging.info('angle between camera and floor is %f', angle)

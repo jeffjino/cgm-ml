@@ -16,7 +16,7 @@ def test_blur_face():
     depthmap_fname = 'depth_dog_1622182020448_100_282.depth'
     rgb_fname = 'rgb_dog_1622182020448_100_282.jpg'
     calibration_file = str(TOOLKIT_DIR / 'huawei_p40pro' / 'camera_calibration.txt')
-    dmap = Depthmap.create_from_file(depthmap_dir, depthmap_fname, rgb_fname, calibration_file)
+    dmap = Depthmap.create_from_zip(depthmap_dir, depthmap_fname, rgb_fname, calibration_file)
 
     # Find top of the object
     floor = dmap.get_floor_level()

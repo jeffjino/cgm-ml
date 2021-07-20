@@ -83,11 +83,11 @@ class Depthmap:
         return self.rgb_array is not None
 
     @classmethod
-    def create_from_file(cls,
-                         depthmap_dir: str,
-                         depthmap_fname: str,
-                         rgb_fname: str,
-                         calibration_file: str) -> 'Depthmap':
+    def create_from_zip(cls,
+                        depthmap_dir: str,
+                        depthmap_fname: str,
+                        rgb_fname: str,
+                        calibration_file: str) -> 'Depthmap':
 
         # read depthmap data
         path = extract_depthmap(depthmap_dir, depthmap_fname)
