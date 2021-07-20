@@ -29,5 +29,5 @@ def test_maskrcnn_resizeimage():
     assert height > 100
 
     # Check the pixel values of the mask
-    assert mask[0][0] == 0  # Background (0) is in the corner
-    assert mask[int(height / 2)][int(width / 2)] == 1  # Child (1) is in the middle
+    assert mask[0, 0] == 0  # Background (0) is in the corner
+    assert mask[int(height / 2), int(width / 2)] == 1  # Child (1) is in the middle

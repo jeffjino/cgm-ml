@@ -128,7 +128,7 @@ def render_segmentation(output: np.array,
             vertical_z = (point[2] % PATTERN_LENGTH_IN_METERS) / PATTERN_LENGTH_IN_METERS
             vertical = (vertical_x + vertical_z) / 2.0
             index = subplot * dmap.height + dmap.height - y - 1
-            if mask[x][y] == MASK_CHILD:
+            if mask[x, y] == MASK_CHILD:
                 output[x][index][0] = horizontal / (depth * depth)
                 output[x][index][1] = horizontal / (depth * depth)
             elif abs(normal[1]) < 0.5:

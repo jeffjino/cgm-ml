@@ -237,12 +237,12 @@ class Depthmap:
             for y in range(self.height):
                 depth = self.parse_depth_smoothed(x, y)
                 if not depth:
-                    mask[x][y] = MASK_INVALID
+                    mask[x, y] = MASK_INVALID
                     continue
                 normal = self.calculate_normal_vector(x, y)
                 point = self.convert_2d_to_3d_oriented(1, x, y, depth)
                 if abs(normal[1]) > 0.5 and abs(point[1] - floor) < 0.1:
-                    mask[x][y] = MASK_FLOOR
+                    mask[x, y] = MASK_FLOOR
 
         return mask
 
@@ -254,7 +254,7 @@ class Depthmap:
         mask = self.detect_floor(floor)
         for x in range(self.width):
             for y in range(self.height):
-                if mask[x][y] != 0:
+                if mask[x, y] != 0:
                     continue
                 pixel = [x, y]
                 aabb = [pixel[0], pixel[1], pixel[0], pixel[1]]
@@ -266,7 +266,7 @@ class Depthmap:
                     depth_center = self.depthmap_arr[pixel[0], pixel[1]]
 
                     # Add neighbor points (if there is no floor and they are connected)
-                    if mask[pixel[0]][pixel[1]] == 0:
+                    if mask[pixel[0], pixel[1]] == 0:
                         for direction in dirs:
                             pixel_dir = [pixel[0] + direction[0], pixel[1] + direction[1]]
                             depth_dir = self.depthmap_arr[pixel_dir[0], pixel_dir[1]]
@@ -280,7 +280,7 @@ class Depthmap:
                     aabb[3] = max(pixel[1], aabb[3])
 
                     # Update the mask
-                    mask[pixel[0]][pixel[1]] = current
+                    mask[pixel[0], pixel[1]] = current
 
                 # Check if the object size is valid
                 object_size_pixels = max(aabb[2] - aabb[0], aabb[3] - aabb[1])
@@ -314,7 +314,7 @@ class Depthmap:
         highest = [-sys.maxsize, -sys.maxsize, -sys.maxsize]
         for x in range(self.width):
             for y in range(self.height):
-                if mask[x][y] == MASK_CHILD:
+                if mask[x, y] == MASK_CHILD:
                     depth = self.depthmap_arr[x, y]
                     point = self.convert_2d_to_3d_oriented(1, x, y, depth)
                     if highest[1] < point[1]:
