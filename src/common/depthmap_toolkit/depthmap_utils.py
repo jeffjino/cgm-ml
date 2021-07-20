@@ -76,13 +76,13 @@ def matrix_calculate(position: List[float], rotation: List[float]) -> List[float
     return output
 
 
-def matrix_transform_point(point: List[float], matrix: List[float]) -> List[float]:
-    """Transformation of point by matrix"""
+def matrix_transform_point(point: List[float], device_pose: List[float]) -> List[float]:
+    """Transformation of point by device pose matrix"""
     output = [0, 0, 0, 1]
-    output[0] = point[0] * matrix[0] + point[1] * matrix[4] + point[2] * matrix[8] + matrix[12]
-    output[1] = point[0] * matrix[1] + point[1] * matrix[5] + point[2] * matrix[9] + matrix[13]
-    output[2] = point[0] * matrix[2] + point[1] * matrix[6] + point[2] * matrix[10] + matrix[14]
-    output[3] = point[0] * matrix[3] + point[1] * matrix[7] + point[2] * matrix[11] + matrix[15]
+    output[0] = point[0] * device_pose[0] + point[1] * device_pose[4] + point[2] * device_pose[8] + device_pose[12]
+    output[1] = point[0] * device_pose[1] + point[1] * device_pose[5] + point[2] * device_pose[9] + device_pose[13]
+    output[2] = point[0] * device_pose[2] + point[1] * device_pose[6] + point[2] * device_pose[10] + device_pose[14]
+    output[3] = point[0] * device_pose[3] + point[1] * device_pose[7] + point[2] * device_pose[11] + device_pose[15]
 
     output[0] /= abs(output[3])
     output[1] /= abs(output[3])

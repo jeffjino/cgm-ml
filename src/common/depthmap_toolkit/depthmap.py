@@ -41,9 +41,9 @@ class Depthmap:
         max_confidence (float): Confidence is amount of IR light reflected
                                 (e.g. 0 to 255 in Lenovo, new standard is 0 to 7)
                                 This is actually an int.
-        matrix (List[float]): The device pose (= position and rotation)
+        device_pose (List[float]): The device pose (= position and rotation)
                               The ZIP-file header contains this pose
-                              - `matrix` is a list representation of this pose
+                              - `device_pose` is a list representation of this pose
                               - can be used to project into a different space
         rgb_fpath (str): Path to RGB file (e.g. to the jpg)
         rgb_array (np.array): RGB data
@@ -58,7 +58,7 @@ class Depthmap:
             depthmap_arr: Optional[np.array],
             depth_scale: float,
             max_confidence: float,
-            matrix: List[float],
+            device_pose: List[float],
             rgb_fpath: Path,
             rgb_array: np.array):
         """Constructor
@@ -70,7 +70,7 @@ class Depthmap:
         self.height = height
         self.depth_scale = depth_scale
         self.max_confidence = max_confidence
-        self.matrix = matrix
+        self.device_pose = device_pose
         self.rgb_fpath = rgb_fpath
         self.rgb_array = rgb_array
         assert depthmap_arr is None or data is None
@@ -102,9 +102,9 @@ class Depthmap:
             if len(header) >= 10:
                 position = (float(header[7]), float(header[8]), float(header[9]))
                 rotation = (float(header[3]), float(header[4]), float(header[5]), float(header[6]))
-                matrix = matrix_calculate(position, rotation)
+                device_pose = matrix_calculate(position, rotation)
             else:
-                matrix = IDENTITY_MATRIX_4D
+                device_pose = IDENTITY_MATRIX_4D
             data = f.read()
             f.close()
 
@@ -129,7 +129,7 @@ class Depthmap:
                    depthmap_arr,
                    depth_scale,
                    max_confidence,
-                   matrix,
+                   device_pose,
                    rgb_fpath,
                    rgb_array
                    )
@@ -144,7 +144,7 @@ class Depthmap:
         data = None  # bytes
         depth_scale = 0.001
         max_confidence = 7.0
-        matrix = None
+        device_pose = None
         rgb_fpath = None
         rgb_array = rgb_arr
 
@@ -155,7 +155,7 @@ class Depthmap:
                    depthmap_arr,
                    depth_scale,
                    max_confidence,
-                   matrix,
+                   device_pose,
                    rgb_fpath,
                    rgb_array,
                    )
@@ -201,11 +201,11 @@ class Depthmap:
         if is_google_tango_resolution(self.width, self.height):
             res = [-res[0], -res[1], -res[2]]
 
-        if not self.matrix:
-            logging.warn("Device pose (`matrix`) was not provided.")
+        if not self.device_pose:
+            logging.warn("Device pose matrix was not provided.")
             return res
         try:
-            res = matrix_transform_point(res, self.matrix)
+            res = matrix_transform_point(res, self.device_pose)
             res = [res[0], -res[1], res[2]]
         except NameError:
             pass
