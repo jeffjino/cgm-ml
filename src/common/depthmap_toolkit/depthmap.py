@@ -375,7 +375,7 @@ def convert_3d_to_2d(intrinsics: list, x: float, y: float, depth: float, width: 
     """Convert point in meters into point in pixels
 
         Args:
-            intrinsics of sensor: Tells if this is ToF sensor or RGB sensor
+            intrinsics: is the calibration of the RGB/ToF sensor lenses
             x: X-pos in m
             y: Y-pos in m
             depth: distance from sensor to object at (x, y)
