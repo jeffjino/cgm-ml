@@ -199,7 +199,7 @@ class Depthmap:
 
         res = [-res[0], res[1], res[2]]
         if is_google_tango_resolution(self.width, self.height):
-            res = [-res[0], -res[1], -res[2]]
+            res = [-res[0], -res[1], res[2]]
 
         if not self.device_pose:
             logging.warn("Device pose matrix was not provided.")
@@ -352,18 +352,15 @@ class Depthmap:
         """Get average depth value from neighboring pixels"""
         if tx - 1 < 0 or ty - 1 < 0:
             return 0.
-        if tx + 1 >= self.width or ty + 1 >= self.height:
+        if tx + 1 >= self.width - 1 or ty + 1 >= self.height - 1:
             return 0.
 
         # Get all neighbor depths
-        try:
-            depth_center = self.depthmap_arr[tx, ty]
-            depth_x_minus = self.depthmap_arr[tx - 1, ty]
-            depth_x_plus = self.depthmap_arr[tx + 1, ty]
-            depth_y_minus = self.depthmap_arr[tx, ty - 1]
-            depth_y_plus = self.depthmap_arr[tx, ty + 1]
-        except IndexError:
-            return 0.
+        depth_center = self.depthmap_arr[tx, ty]
+        depth_x_minus = self.depthmap_arr[tx - 1, ty]
+        depth_x_plus = self.depthmap_arr[tx + 1, ty]
+        depth_y_minus = self.depthmap_arr[tx, ty - 1]
+        depth_y_plus = self.depthmap_arr[tx, ty + 1]
 
         # Ensure the depth is defined
         if 0 in [depth_center, depth_x_plus, depth_y_minus, depth_y_plus]:
