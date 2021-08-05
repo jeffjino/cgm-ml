@@ -7,7 +7,7 @@ from bunch import Bunch
 from azureml.core import Experiment, Workspace
 from azureml.core.run import Run
 
-from .utils import download_dataset, get_dataset_path
+from common.model_utils.utils import download_dataset, get_dataset_path
 
 DATA_DIR_ONLINE_RUN = Path("/tmp/data/")
 REPO_DIR = Path(__file__).parents[3].absolute()
