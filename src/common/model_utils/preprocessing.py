@@ -1,4 +1,4 @@
-from .model_utils_constants import BLACKLIST_QRCODES
+from common.model_utils.model_utils_constants import BLACKLIST_QRCODES
 
 
 def preprocess_depthmap(depthmap):
