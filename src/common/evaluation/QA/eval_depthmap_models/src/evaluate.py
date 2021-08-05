@@ -41,12 +41,6 @@ def is_offline_run(run: Run) -> bool:
 # Get the current run.
 RUN = Run.get_context()
 
-if is_offline_run(RUN):
-    # Copy common into the temp folder
-    common_dir_path = REPO_DIR / "src/common"
-    temp_common_dir = Path(__file__).parent / "common"
-    copy_dir(src=common_dir_path, tgt=temp_common_dir, glob_pattern='*/*.py', should_touch_init=True)
-
 from common.evaluation.eval_utilities import (  # noqa: E402, F401
     is_ensemble_evaluation, is_multiartifact_evaluation)
 from common.evaluation.evaluation_classes import (  # noqa: E402, F401
