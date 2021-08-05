@@ -1,3 +1,7 @@
+
+src/common/evaluation/QA/eval_depthmap_models/src/common
+src/models/CNNDepthMap/CNNDepthMap-height/q3-depthmap-plaincnn-height/src/common
+
 src/common/depthmap_toolkit/testdata/lenovo_phab2pro_180x135/
 src/common/depthmap_toolkit/tests/huawei_p40pro_full/
 
