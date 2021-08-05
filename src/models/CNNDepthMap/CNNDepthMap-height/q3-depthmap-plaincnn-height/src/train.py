@@ -125,7 +125,7 @@ def tf_load_pickle(path, max_value):
         depthmap, targets = pickle.load(open(path.numpy(), "rb"))
         depthmap = preprocess_depthmap(depthmap)
         depthmap = depthmap / max_value
-        depthmap = tf.image.resize(depthmap, (CONFIG.IMAGE_TARGET_HEIGHT, CONFIG.IMAGE_TARGET_WIDTH))
+        # depthmap = tf.image.resize(depthmap, (CONFIG.IMAGE_TARGET_HEIGHT, CONFIG.IMAGE_TARGET_WIDTH))
         targets = preprocess_targets(targets, CONFIG.TARGET_INDEXES)
         return depthmap, targets
 
