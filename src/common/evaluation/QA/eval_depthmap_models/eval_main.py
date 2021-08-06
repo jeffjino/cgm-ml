@@ -13,6 +13,7 @@ from azureml.core.compute_target import ComputeTargetException
 from azureml.core.run import Run
 from azureml.core.script_run_config import ScriptRunConfig
 
+sys.path.append(Path(__file__).parents[4])
 sys.path.append(Path(__file__).parent)
 
 from src.constants import REPO_DIR, DEFAULT_CONFIG  # noqa: E402, F401
