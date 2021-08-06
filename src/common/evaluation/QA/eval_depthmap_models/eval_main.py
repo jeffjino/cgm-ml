@@ -23,9 +23,9 @@ logger.addHandler(handler)
 
 CWD = Path(__file__).parent
 print('__file__')  # TODO
-print(__file__)  # TODO
-REPO_DIR = Path(__file__).parents[5].absolute()
-
+print(Path(__file__).absolute())  # TODO
+REPO_DIR = Path(__file__).absolute().parents[5]
+print(REPO_DIR)
 
 def copy_dir(src: Path, tgt: Path, glob_pattern: str, should_touch_init: bool = False):
     logger.info("Creating temp folder")
