@@ -2,7 +2,6 @@ import logging
 import logging.config
 import os
 from pathlib import Path
-import sys
 import time
 from typing import List, Tuple
 
@@ -28,10 +27,8 @@ from .eval_utilities import (
     draw_uncertainty_goodbad_plot, get_prediction_multiartifact, get_column_list, prepare_sample_dataset,
     draw_uncertainty_scatterplot, is_filter_enabled)
 
-sys.path.append(str(Path(__file__).parents[1]))
-
-from model_utils.preprocessing_multiartifact_python import create_multiartifact_paths_for_qrcodes  # noqa: E402
-from model_utils.preprocessing_multiartifact_tensorflow import create_multiartifact_sample  # noqa: E402
+from common.model_utils.preprocessing_multiartifact_python import create_multiartifact_paths_for_qrcodes  # noqa: E402
+from common.model_utils.preprocessing_multiartifact_tensorflow import create_multiartifact_sample  # noqa: E402
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)

@@ -13,7 +13,7 @@ import logging.config
 import numpy as np
 from torchvision.models.detection import maskrcnn_resnet50_fpn
 
-from imgseg.predict import predict
+from common.reliability.background_segm.imgseg.predict import predict
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)

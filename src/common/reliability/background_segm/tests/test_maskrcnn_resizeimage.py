@@ -1,12 +1,9 @@
 """Testcases for maskrcnn resize image file."""
-import sys
 from pathlib import Path
 
 from PIL import Image
 
-sys.path.append(str(Path(__file__).parents[1]))
-
-from maskrcnn_resizeimage import predict_by_resize  # noqa: E402
+from common.reliability.background_segm.maskrcnn_resizeimage import predict_by_resize
 
 IMAGE_FNAME = "rgb_test.jpg"
 

@@ -11,9 +11,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.widgets import Button
 
-from depthmap import Depthmap
-from exporter import export_obj, export_pcd
-from visualisation import render_plot
+from common.depthmap_toolkit.depthmap import Depthmap
+from common.depthmap_toolkit.exporter import export_obj, export_pcd
+from common.depthmap_toolkit.visualisation import render_plot
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)

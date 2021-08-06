@@ -1,6 +1,3 @@
-import sys
-from pathlib import Path
-
 from azureml.core import Workspace
 from azureml.core.model import InferenceConfig, Model
 from azureml.core.webservice import AciWebservice  # noqa: E401
@@ -9,8 +6,7 @@ from config_deepensemble_1 import CONFIG
 
 from constants import REPO_DIR
 
-sys.path.append(str(Path(__file__).parents[1] / 'model_utils'))   # noqa
-import environment  # noqa: E402
+from common.model_utils import environment
 
 if __name__ == "__main__":
 

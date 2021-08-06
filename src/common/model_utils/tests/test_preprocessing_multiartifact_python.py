@@ -1,10 +1,6 @@
-from pathlib import Path
 import pytest
-import sys
 
-sys.path.append(str(Path(__file__).parents[2]))  # common/ dir
-
-from model_utils.preprocessing_multiartifact_python import (  # noqa: E402
+from common.model_utils.preprocessing_multiartifact_python import (
     sample_systematic_from_artifacts, sample_windows_from_artifacts, REGEX_PICKLE)
 
 

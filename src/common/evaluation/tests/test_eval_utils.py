@@ -1,15 +1,10 @@
-import sys
-from pathlib import Path
-
 from bunch import Bunch
 import numpy as np
 import pandas as pd
 
-sys.path.append(str(Path(__file__).parents[2]))  # common/ dir
-
-from evaluation.constants_eval import COLUMN_NAME_AGE, COLUMN_NAME_SEX  # noqa: E402
-from evaluation.eval_utils import avgerror, calculate_performance, extract_scantype, extract_qrcode  # noqa: E402
-from evaluation.eval_utilities import (  # noqa: E402
+from common.evaluation.constants_eval import COLUMN_NAME_AGE, COLUMN_NAME_SEX
+from common.evaluation.eval_utils import avgerror, calculate_performance, extract_scantype, extract_qrcode
+from common.evaluation.eval_utilities import (
     calculate_accuracies, calculate_accuracies_on_age_buckets, calculate_performance_age)
 
 QR_CODE_1 = "1585013006-yqwb95138e"

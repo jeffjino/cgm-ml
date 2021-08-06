@@ -27,8 +27,8 @@ from cv2 import cv2
 from pyntcloud import PyntCloud
 from pyntcloud.io import write_ply
 
-from cgm_fusion.calibration import (get_extrinsic_matrix_depth,
-                                    get_intrinsic_matrix_depth, get_k_depth)
+from common.rgbd_toolkit.cgm_fusion.calibration import (get_extrinsic_matrix_depth,
+                                                        get_intrinsic_matrix_depth, get_k_depth)
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)

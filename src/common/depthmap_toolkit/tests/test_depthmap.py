@@ -1,10 +1,8 @@
 from pathlib import Path
-import sys
 
 import numpy as np
 
-sys.path.append('./src/common/depthmap_toolkit')
-from depthmap import Depthmap, smoothen_depthmap_array  # noqa: E402
+from common.depthmap_toolkit.depthmap import Depthmap, smoothen_depthmap_array
 
 TOOLKIT_DIR = Path(__file__).parents[0].absolute()
 

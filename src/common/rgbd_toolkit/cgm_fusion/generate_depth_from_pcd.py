@@ -1,8 +1,7 @@
-from cgm_fusion import utility
-import sys
 import logging
 import logging.config
-sys.path.insert(0, "..")
+
+from common.rgbd_toolkit.cgm_fusion import utility
 
 # flake8: noqa: E501
 
@@ -20,7 +19,6 @@ logger.addHandler(handler)
 # for file in glob.glob("*.ply"):
 #     logger.info(file)
 
-sys.path.insert(0, "..")
 # import dbutils
 # import config
 

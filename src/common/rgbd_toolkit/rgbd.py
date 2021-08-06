@@ -15,8 +15,8 @@ import pandas as pd
 from PIL import Image
 from tqdm import tqdm
 
-from cgm_fusion.fusion import fuse_rgbd
-from get_timestamps import get_timestamps_from_pcd, get_timestamps_from_rgb
+from common.rgbd_toolkit.cgm_fusion.fusion import fuse_rgbd
+from common.rgbd_toolkit.get_timestamps import get_timestamps_from_pcd, get_timestamps_from_rgb
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)

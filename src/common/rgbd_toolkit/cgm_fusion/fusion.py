@@ -26,8 +26,8 @@ from cv2 import cv2
 from PIL import Image
 from pyntcloud import PyntCloud
 
-from cgm_fusion.calibration import get_extrinsic_matrix, get_intrinsic_matrix, get_k
-from cgm_fusion.utility import fuse_point_cloud
+from common.rgbd_toolkit.cgm_fusion.calibration import get_extrinsic_matrix, get_intrinsic_matrix, get_k
+from common.rgbd_toolkit.cgm_fusion.utility import fuse_point_cloud
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)

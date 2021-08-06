@@ -1,10 +1,8 @@
 from pathlib import Path
 import pickle
-import sys
 from tempfile import TemporaryDirectory
 
-sys.path.append('./src/common/data_utilities')
-from mlpipeline_utils import (  # noqa: E402
+from common.data_utilities.mlpipeline_utils import (
     load_depth, get_depthmaps, ArtifactProcessor)
 
 DATA_UTILITIES_DIR = Path(__file__).parents[1].absolute()

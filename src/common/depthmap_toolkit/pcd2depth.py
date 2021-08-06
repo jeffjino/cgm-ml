@@ -3,8 +3,8 @@ import zipfile
 import numpy as np
 
 from typing import List
-from depthmap import convert_3d_to_2d
-from depthmap_utils import parse_numbers
+from common.depthmap_toolkit.depthmap import convert_3d_to_2d
+from common.depthmap_toolkit.depthmap_utils import parse_numbers
 
 ENCODING = 'charmap'
 

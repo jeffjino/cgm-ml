@@ -9,8 +9,8 @@ from scipy import ndimage
 import numpy as np
 from PIL import Image
 
-from depthmap_utils import matrix_calculate, IDENTITY_MATRIX_4D, parse_numbers
-from constants import EXTRACTED_DEPTH_FILE_NAME, MASK_FLOOR, MASK_CHILD, MASK_INVALID
+from common.depthmap_toolkit.depthmap_utils import matrix_calculate, IDENTITY_MATRIX_4D, parse_numbers
+from common.depthmap_toolkit.constants import EXTRACTED_DEPTH_FILE_NAME, MASK_FLOOR, MASK_CHILD, MASK_INVALID
 
 TOOLKIT_DIR = Path(__file__).parents[0].absolute()
 

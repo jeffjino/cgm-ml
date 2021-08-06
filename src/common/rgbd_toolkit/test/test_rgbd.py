@@ -1,10 +1,8 @@
-import sys
 from pathlib import Path
 
 import numpy as np
-sys.path.append(str(Path(__file__).parents[1])) # noqa
-from rgbd import find_closest, get_files # noqa
 
+from common.rgbd_toolkit.rgbd import find_closest, get_files
 
 REPO_DIR = str(Path(__file__).parents[0].absolute())
 

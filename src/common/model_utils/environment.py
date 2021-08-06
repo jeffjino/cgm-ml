@@ -1,11 +1,9 @@
 
-import sys
 from pathlib import Path
 
 from azureml.core import Environment, Workspace
 
-sys.path.append(str(Path(__file__).parents[1] / 'endpoints'))
-from constants import REPO_DIR  # noqa: E402
+from common.endpoints.constants import REPO_DIR  # noqa: E402
 
 
 def cgm_environment(workspace: Workspace,

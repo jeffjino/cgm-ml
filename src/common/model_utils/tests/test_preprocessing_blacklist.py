@@ -1,13 +1,7 @@
-from pathlib import Path
-import sys
 import os
 import pytest
 
-CWD = Path(__file__).resolve()
-sys.path.append(str(CWD.parents[2]))  # common/ dir
-
-from model_utils.preprocessing import filter_blacklisted_qrcodes  # noqa: E402
-
+from common.model_utils.preprocessing import filter_blacklisted_qrcodes
 
 BASE_PATH = "this/is/the/test/path"
 

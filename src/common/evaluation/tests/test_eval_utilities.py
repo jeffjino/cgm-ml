@@ -1,13 +1,10 @@
-import sys
 from pathlib import Path
 from bunch import Bunch
 
 import pytest
 import pandas as pd
 
-sys.path.append(str(Path(__file__).parents[2]))  # common/ dir
-
-from evaluation.eval_utilities import tf_load_pickle, prepare_sample_dataset  # noqa: E402
+from common.evaluation.eval_utilities import tf_load_pickle, prepare_sample_dataset
 
 CWD = Path(__file__).resolve()
 REPO_DIR = str(CWD.parents[4].absolute())

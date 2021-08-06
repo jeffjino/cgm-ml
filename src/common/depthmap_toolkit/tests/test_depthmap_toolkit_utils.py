@@ -1,9 +1,6 @@
-import sys
-
 import numpy as np
 
-sys.path.append('./src/common/depthmap_toolkit')
-from depthmap_utils import matrix_transform_point  # noqa: E402
+from common.depthmap_toolkit.depthmap_utils import matrix_transform_point
 
 
 def test_matrix_transform_point_identity():
