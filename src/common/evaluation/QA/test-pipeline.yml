@@ -20,7 +20,7 @@ jobs:
       set -euox pipefail
       cd src/common/evaluation/QA/eval_depthmap_models
       source /usr/share/miniconda/etc/profile.d/conda.sh
-      conda env create -f environment.yml
+      conda env create -f environment_eval_main.yml
       conda activate CGM_QA_Pipeline
       jupyter kernelspec list
     displayName: 'Environment Creation'
