@@ -21,7 +21,7 @@ This project uses machine learning to identify malnutrition from 3D scans of chi
 Our development environment is [Microsoft Azure ML](https://azure.microsoft.com/en-us/services/machine-learning/#security)
 
 You will need:
-* Python 3
+* Python 3.6 or Python 3.7
 * TensorFlow version 2
 * other libraries
 
@@ -29,6 +29,13 @@ To install, run:
 
 ```bash
 pip install -r requirements.txt
+```
+
+To set the PYTHONPATH correctly, so that the import statements will work correctly,
+add the following to your `~/.bashrc` or `~/.zshrc`:
+
+```bash
+export PYTHONPATH=<INSERT ABSOLUTE PATH TO CGM-ML>/src:${PYTHONPATH}
 ```
 
 For installing point cloud libraries, refer to
