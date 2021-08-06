@@ -13,10 +13,7 @@ from azureml.core.compute_target import ComputeTargetException
 from azureml.core.run import Run
 from azureml.core.script_run_config import ScriptRunConfig
 
-sys.path.append(Path(__file__).parents[4])
 sys.path.append(Path(__file__).parent)
-
-from src.constants import REPO_DIR, DEFAULT_CONFIG  # noqa: E402, F401
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -25,6 +22,9 @@ handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)
 logger.addHandler(handler)
 
 CWD = Path(__file__).parent
+print('__file__')  # TODO
+print(__file__)  # TODO
+REPO_DIR = Path(__file__).parents[5].absolute()
 
 
 def copy_dir(src: Path, tgt: Path, glob_pattern: str, should_touch_init: bool = False):
@@ -44,6 +44,18 @@ def copy_dir(src: Path, tgt: Path, glob_pattern: str, should_touch_init: bool = 
 
 
 if __name__ == "__main__":
+    # Copy QA src/ dir
+    temp_path = CWD / "temp_eval"
+    copy_dir(src=CWD / "src", tgt=temp_path, glob_pattern='*.py')
+
+    # Copy common/ folder
+    common_dir_path = REPO_DIR / "src/common"
+    temp_common_dir = temp_path / "common"
+    copy_dir(src=common_dir_path, tgt=temp_common_dir, glob_pattern='*/*.py', should_touch_init=True)
+
+    from src.constants import DEFAULT_CONFIG  # noqa: E402, F401
+    from temp_eval.common.model_utils.environment import cgm_environment  # noqa: E402, F401
+
     parser = argparse.ArgumentParser()
     parser.add_argument("--qa_config_module", default=DEFAULT_CONFIG, help="Configuration file")
     args = parser.parse_args()
@@ -55,17 +67,6 @@ if __name__ == "__main__":
     DATA_CONFIG = qa_config.DATA_CONFIG
     RESULT_CONFIG = qa_config.RESULT_CONFIG
     FILTER_CONFIG = qa_config.FILTER_CONFIG if getattr(qa_config, 'FILTER_CONFIG', False) else None
-
-    # Copy QA src/ dir
-    temp_path = CWD / "temp_eval"
-    copy_dir(src=CWD / "src", tgt=temp_path, glob_pattern='*.py')
-
-    # Copy common/ folder
-    common_dir_path = REPO_DIR / "src/common"
-    temp_common_dir = temp_path / "common"
-    copy_dir(src=common_dir_path, tgt=temp_common_dir, glob_pattern='*/*.py', should_touch_init=True)
-
-    from temp_eval.common.model_utils.environment import cgm_environment  # noqa: E402, F401
 
     workspace = Workspace.from_config()
     run = Run.get_context()
