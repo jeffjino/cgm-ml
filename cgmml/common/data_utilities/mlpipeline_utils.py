@@ -29,7 +29,7 @@ def preprocess_depthmap(depthmap: np.ndarray) -> np.ndarray:
 def preprocess(depthmap: np.ndarray) -> np.ndarray:
     depthmap = preprocess_depthmap(depthmap)
     depthmap = depthmap / NORMALIZATION_VALUE
-    depthmap = resize(depthmap, (IMAGE_TARGET_HEIGHT, IMAGE_TARGET_WIDTH))
+    depthmap = resize(depthmap, (IMAGE_TARGET_WIDTH, IMAGE_TARGET_HEIGHT))
     depthmap = depthmap.reshape((depthmap.shape[0], depthmap.shape[1], 1))
     return depthmap
 
