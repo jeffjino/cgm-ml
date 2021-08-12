@@ -28,7 +28,7 @@ def test_artifact_processor():
         processed_fname = artifact_processor.process_artifact_tuple(ARTIFACT_TUPLE)
 
         depthmap, targets = pickle.load(open(processed_fname, 'rb'))
-        assert depthmap.shape == (180, 240, 1), depthmap.shape
+        assert depthmap.shape == (240, 180, 1), depthmap.shape
         assert 'height' in targets
 
         pickle_path_expected = str(
@@ -45,7 +45,7 @@ def test_artifact_processor():
 def test_create_layers():
     zip_input_full_path = DATA_UTILITIES_DIR / 'tests' / 'zip_files' / ARTIFACT_ZIP_PATH
     layers, metadata = create_layers(zip_input_full_path)
-    assert layers.shape == (180, 240, 1), layers.shape
+    assert layers.shape == (240, 180, 1), layers.shape
 
     assert isinstance(metadata['raw_header'], str), metadata['raw_header']
     expected_header = '320x240_0.001_7_-0.15561539_-0.07175923_-0.6638096_0.72800505_-8.440511_0.3684988_-1.3508477'
