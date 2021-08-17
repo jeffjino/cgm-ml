@@ -149,7 +149,8 @@ class ArtifactProcessor:
         scan_id = artifact_dict['scan_id']
         scan_step = artifact_dict['scan_step']
         order_number = artifact_dict['order_number']
-        pickle_output_path = f"scans/{scan_id}/{scan_step}/pc_{scan_id}_{timestamp}_{scan_step}_{order_number}.p"
+        person_id = artifact_dict['person_id']
+        pickle_output_path = f"scans/{person_id}/{scan_step}/pc_{scan_id}_{timestamp}_{scan_step}_{order_number}.p"
 
         # Write into pickle
         pickle_output_full_path = f"{self.output_dir}/{pickle_output_path}"
