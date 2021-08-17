@@ -17,6 +17,7 @@ ARTIFACT_DICT = {
     'weight': 20.555,
     'muac': 10.0,
     'order_number': 3,
+    'person_id': '09495c00-ff19-11eb-95bd-6fef000028be'
 }
 
 
@@ -34,7 +35,7 @@ def test_artifact_processor_depthmap():
             / 'tests'
             / 'pickle_files'
             / 'scans'
-            / 'c571de02-a723-11eb-8845-bb6589a1fbe8'
+            / '09495c00-ff19-11eb-95bd-6fef000028be'
             / '102'
             / 'pc_c571de02-a723-11eb-8845-bb6589a1fbe8_2021-04-22_13-34-33-302557_102_3.p')
         assert pickle_path_expected.split('/')[-4:] == processed_fname.split('/')[-4:]
@@ -68,7 +69,7 @@ def test_artifact_processor_rgbd():
             / 'tests'
             / 'pickle_files'
             / 'scans'
-            / 'c571de02-a723-11eb-8845-bb6589a1fbe8'
+            / '09495c00-ff19-11eb-95bd-6fef000028be'
             / '102'
             / 'pc_c571de02-a723-11eb-8845-bb6589a1fbe8_2021-04-22_13-34-33-302557_102_3.p')
         assert pickle_path_expected.split('/')[-4:] == processed_fname.split('/')[-4:]
