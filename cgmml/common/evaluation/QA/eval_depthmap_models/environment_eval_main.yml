@@ -1,0 +1,18 @@
+name: CGM_QA_Pipeline
+channels:
+  - conda-forge
+dependencies:
+  - cmake
+  - setuptools=50.3.0
+  - wheel=0.36.2
+  - python=3.7
+  - pip==20.2
+  - nb_conda_kernels==2.2.1
+  - pip:
+    - numpy==1.19.5
+    - pandas==0.25.3
+    - glob2==0.7
+    - bunch==1.0.1
+    - pyyaml
+    - azure-cli==2.25.0
+    - azureml-sdk==1.31.0

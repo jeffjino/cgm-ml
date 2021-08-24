@@ -8,10 +8,10 @@ The objective of analyseOutput.py script is to analyse pose_estimation_output.js
 
 Following files are required to run analyseOutput.py:
 
- 1. config.py located under cgm-ml/src/common/reliability/pose_estimation/QA/src/config.py
- 2. posepoints.py located under cgm-ml/src/common/reliability/pose_estimation/QA/src/posepoints.py
+ 1. config.py located under cgm-ml/cgmml/common/reliability/pose_estimation/QA/src/config.py
+ 2. posepoints.py located under cgm-ml/cgmml/common/reliability/pose_estimation/QA/src/posepoints.py
  3. pose_estimation_output.json (this is ths result of executing the notebook located in the directory,
- cgm-ml/src/common/reliability/pose_estimation/QA/poseest_notebook.ipynb
+ cgm-ml/cgmml/common/reliability/pose_estimation/QA/poseest_notebook.ipynb
 
 - config.py file contains the list of parameter configuration that has been used to train the pose estimation model
 - posepoints.py file contains functions to set pose details (e.g. POSE_PAIRS and BODY_PARTS) which has been used in the analyseOutput.py script

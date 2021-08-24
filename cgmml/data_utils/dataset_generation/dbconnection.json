@@ -1,0 +1,8 @@
+{
+    "dbname": "",
+    "user": "",
+    "host": "",
+    "password": "",
+    "port": 5432,
+    "sslmode": "require"
+}

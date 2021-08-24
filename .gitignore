@@ -1,13 +1,7 @@
-src/common/depthmap_toolkit/testdata/lenovo_phab2pro_180x135/
-src/common/depthmap_toolkit/tests/huawei_p40pro_full/
-
 # Custom
-src/common/depthmap_toolkit/testdata/lenovo_phab2pro_180x135
-src/common/depthmap_toolkit/tests/huawei_p40pro_full
 wandb/
 old/cgm_database/dbconnection.json
 *.ply
-*.png
 *.amltemp
 .ipynb_aml_checkpoints/
 test-output.xml
@@ -15,14 +9,27 @@ data/
 vandelay-py.js
 logs/
 logs_*/
-src/common/depthmap_toolkit/data
-src/common/depthmap_toolkit/honor/
-src/common/depthmap_toolkit/output/
-src/common/depthmap_toolkit/export/
+cgmml/common/depthmap_toolkit/data
+cgmml/common/depthmap_toolkit/honor/
+cgmml/common/depthmap_toolkit/output/
+cgmml/common/depthmap_toolkit/export/
 tmp_*/
 temp_*/
 best_model.ckpt/
 best_model.h5
+.local_gitignore
+
+# Data directories
+cgmml/common/depthmap_toolkit/testdata/lenovo_phab2pro_180x135/
+cgmml/common/depthmap_toolkit/tests/huawei_p40pro_full/
+
+# Temporary directories
+cgmml/common/evaluation/QA/eval_depthmap_models/src/common
+cgmml/models/CNNDepthMap/CNNDepthMap-height/2021q2-depthmap-resnet-height/src/common
+cgmml/models/CNNDepthMap/CNNDepthMap-height/2021q3-depthmap-plaincnn-rgbd/src/common
+cgmml/models/CNNDepthMap/CNNDepthMap-height/q3-depthmap-plaincnn-height/src/common
+cgmml/models/CNNDepthMap/CNNDepthMap-height/q3-depthmapmultiartifactlatefusion-plaincnn-height/src/common
+cgmml/models/CNNDepthMap/CNNDepthMap-multitask/q4-depthmap-plaincnn-multitask/src/common
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -1,0 +1,74 @@
+trigger:
+  branches:
+    include:
+    - 'releases/*'
+    - '*pipeline*'
+
+pr: none
+
+jobs:
+- job: EvaluationJob
+  timeoutInMinutes: 300
+  cancelTimeoutInMinutes: 2
+
+  pool:
+    vmImage: 'Ubuntu-20.04'
+
+  steps:
+
+  - bash: |
+      set -euox pipefail
+      cd cgmml/common/evaluation/QA/eval_depthmap_models
+      source /usr/share/miniconda/etc/profile.d/conda.sh
+      conda env create -f environment_eval_main.yml
+      conda activate CGM_QA_Pipeline
+      jupyter kernelspec list
+    displayName: 'Environment Creation'
+
+  - bash: |
+      az login -t $(sptenent) --service-principal -u $(spidentity) --password $(spsecret)
+      az account set --subscription $(subscriptionid)
+    displayName: 'Azure Login'
+
+  - bash: |
+      set -euox pipefail
+      cd cgmml/common/evaluation/QA
+      source /usr/share/miniconda/etc/profile.d/conda.sh
+      conda activate CGM_QA_Pipeline
+      python auth.py -sid $(subscriptionid) -rg $(RESOURCE_GROUP) -wn $(WORKSPACE_NAME)
+    displayName: 'Saving Workspace Config'
+
+  - bash: |
+      set -euox pipefail
+      cd cgmml/common/evaluation/QA/eval_depthmap_models
+      source /usr/share/miniconda/etc/profile.d/conda.sh
+      conda activate CGM_QA_Pipeline
+      ./eval_configs.sh
+      ls -l
+    displayName: 'Depthmap Model Evaluations'
+
+  - task: CopyFiles@2
+    inputs:
+      SourceFolder: '$(Build.SourcesDirectory)'
+      Contents: |
+        cgmml/common/evaluation/QA/eval_depthmap_models/depthmap-*_output.html
+        cgmml/common/evaluation/QA/eval_depthmap_models/*.csv
+        cgmml/common/evaluation/QA/eval_depthmap_models/*.png
+        cgmml/common/evaluation/QA/eval_depthmap_models/outputs/*/*.csv
+        cgmml/common/evaluation/QA/eval_depthmap_models/outputs/*/*.png
+        cgmml/common/evaluation/QA/eval-standardisation-test/standardisation-test_output.html
+        cgmml/common/evaluation/QA/eval-standardisation-test/*.csv
+        cgmml/common/evaluation/QA/eval-standardisation-test/*.png
+      TargetFolder: '$(Build.ArtifactStagingDirectory)'
+    displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)'
+
+  - task: PublishPipelineArtifact@1
+    inputs:
+      targetPath: '$(Build.ArtifactStagingDirectory)'
+      artifact: 'Output Results'
+      publishLocation: 'pipeline'
+    displayName: 'Publish Results and Output Results'
+
+  - bash: |
+      az logout
+    displayName: 'Azure Logout'

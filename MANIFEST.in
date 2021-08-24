@@ -1,10 +1,11 @@
 include LICENSE
 include README.md
 include setup.py
-recursive-include src/common *.py
-global-exclude src/data_utils/**
-global-exclude src/models/**
-global-exclude src/analyses/**
+recursive-include cgmml/common *.py
+recursive-include cgmml/common *.txt
+global-exclude cgmml/data_utils/**
+global-exclude cgmml/models/**
+global-exclude cgmml/analyses/**
 global-exclude test_*.py
 global-exclude .ipynb_checkpoints/**
 global-exclude temp_eval/**

@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="cgm-ml-common",
-    version="3.0.0-alpha9",
+    version="3.0.0-alpha23",
     author="Markus Hinsche",
     author_email="mhinsche@childgrowthmonitor.com",
     url="https://github.com/Welthungerhilfe/cgm-ml",
@@ -26,4 +26,5 @@ setup(
     python_requires=">=3.6",
     setup_requires=['pytest-runner', 'flake8'],
     tests_require=['pytest'],
+    include_package_data=True,
 )
