@@ -182,6 +182,7 @@ def create_and_fit_model():
     optimizer = get_optimizer(CONFIG.USE_ONE_CYCLE,
                               lr=CONFIG.LEARNING_RATE,
                               n_steps=len(paths_training) / CONFIG.BATCH_SIZE)
+    optimizer = tf.keras.mixed_precision.LossScaleOptimizer(optimizer)
 
     # Compile the model.
     model.compile(
