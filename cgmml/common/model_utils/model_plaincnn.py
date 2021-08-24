@@ -49,11 +49,11 @@ def create_cnn(input_shape: Tuple[int], dropout: bool) -> tf.Module:
     if dropout:
         model.add(layers.Dropout(0.2))
 
-    model.add(layers.Dense(128, activation="relu"))
+    model.add(layers.Dense(128, dtype='float32', activation="relu"))
     if dropout:
         model.add(layers.Dropout(0.25))
 
-    model.add(layers.Dense(1, activation="linear"))
+    model.add(layers.Dense(1, dtype='float32', activation="linear"))
 
     return model
 

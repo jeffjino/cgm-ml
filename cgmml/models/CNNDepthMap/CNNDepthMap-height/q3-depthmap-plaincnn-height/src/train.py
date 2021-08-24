@@ -6,6 +6,7 @@ import logging
 
 import glob2 as glob
 import tensorflow as tf
+from tensorflow.keras import mixed_precision
 from azureml.core import Experiment, Workspace
 from azureml.core.run import Run
 import wandb
@@ -33,7 +34,8 @@ tf.random.set_seed(CONFIG.SPLIT_SEED)
 random.seed(CONFIG.SPLIT_SEED)
 
 # Mixed precision
-tf.keras.mixed_precision.set_global_policy("mixed_float16")
+policy = mixed_precision.Policy('mixed_float16')
+mixed_precision.set_global_policy(policy)
 
 DATA_DIR = REPO_DIR / 'data' if run.id.startswith("OfflineRun") else Path(".")
 logger.info('DATA_DIR: %s', DATA_DIR)
@@ -179,10 +181,11 @@ def create_and_fit_model():
         wandb.config.update(CONFIG)
         training_callbacks.append(WandbCallback(log_weights=True, log_gradients=True, training_data=dataset_batches))
 
+    # tf.config.optimizer.set_experimental_options({"auto_mixed_precision": True})
     optimizer = get_optimizer(CONFIG.USE_ONE_CYCLE,
                               lr=CONFIG.LEARNING_RATE,
                               n_steps=len(paths_training) / CONFIG.BATCH_SIZE)
-    optimizer = tf.keras.mixed_precision.LossScaleOptimizer(optimizer)
+    # optimizer = tf.keras.mixed_precision.LossScaleOptimizer(optimizer, "dynamic")
 
     # Compile the model.
     model.compile(
