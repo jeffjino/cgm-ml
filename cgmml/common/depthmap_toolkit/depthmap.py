@@ -152,9 +152,10 @@ class Depthmap:
     def create_from_zip_absolute(cls,
                                  depthmap_fpath: str,
                                  rgb_fpath: str,
-                                 calibration_fpath: str) -> 'Depthmap':
+                                 calibration_fpath: str,
+                                 extract_to_file_folder: bool = False) -> 'Depthmap':
         width, height, data, depth_scale, max_confidence, device_pose, header_line = (
-            Depthmap.read_depthmap_data(depthmap_fpath))
+            Depthmap.read_depthmap_data(depthmap_fpath, extract_to_file_folder))
         rgb_array = Depthmap.read_rgb_data(rgb_fpath, width, height)
         intrinsics = parse_calibration(calibration_fpath)
         depthmap_arr = None
@@ -177,8 +178,8 @@ class Depthmap:
         return rgb_array
 
     @staticmethod
-    def read_depthmap_data(depthmap_fpath):
-        path = extract_depthmap(depthmap_fpath)
+    def read_depthmap_data(depthmap_fpath, extract_to_file_folder=False):
+        path = extract_depthmap(depthmap_fpath, extract_to_file_folder)
         with open(path, 'rb') as f:
             header_line = f.readline().decode().strip()
             header_parts = header_line.split('_')

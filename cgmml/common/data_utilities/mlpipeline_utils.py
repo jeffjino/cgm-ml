@@ -63,7 +63,8 @@ def preprocess_rgb(rgb_array: np.ndarray) -> np.ndarray:
 
 
 def create_layers(depthmap_fpath: str) -> Tuple[np.ndarray, dict]:
-    dmap = Depthmap.create_from_zip_absolute(depthmap_fpath, rgb_fpath=None, calibration_fpath=CALIBRATION_FPATH)
+    dmap = Depthmap.create_from_zip_absolute(depthmap_fpath, rgb_fpath=None, calibration_fpath=CALIBRATION_FPATH,
+                                             extract_to_file_folder=True)
     depthmap = dmap.depthmap_arr  # shape: (width, height)
     depthmap = preprocess(depthmap)
     layers = depthmap
