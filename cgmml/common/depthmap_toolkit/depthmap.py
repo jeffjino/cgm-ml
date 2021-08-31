@@ -31,10 +31,13 @@ TOOLKIT_DIR = Path(__file__).parents[0].absolute()
 Segment = namedtuple('Segment', 'id aabb')
 
 
-def extract_depthmap(depthmap_fpath: str) -> Path:
+def extract_depthmap(depthmap_fpath: str, extract_to_file_folder: bool = False) -> Path:
     """Extract depthmap from given file"""
+    if extract_to_file_folder:
+        TOOLKIT_DIR = Path(depthmap_fpath).parent
     with zipfile.ZipFile(Path(depthmap_fpath), 'r') as zip_ref:
         zip_ref.extractall(TOOLKIT_DIR)
+
     return TOOLKIT_DIR / EXTRACTED_DEPTH_FILE_NAME
 
 
