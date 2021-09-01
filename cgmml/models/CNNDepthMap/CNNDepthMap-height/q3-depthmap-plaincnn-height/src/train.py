@@ -114,17 +114,18 @@ assert (TARGET_INDEXES is not None) != (TARGET_NAMES is not None), (TARGET_INDEX
 LENGTH_TARGETS = len(TARGET_INDEXES) if TARGET_INDEXES else len(TARGET_NAMES)
 
 
+def py_load_pickle(path, max_value):
+    depthmap, targets = pickle.load(open(path.numpy(), "rb"))
+    depthmap = preprocess_depthmap(depthmap)
+    depthmap = depthmap / max_value
+    if depthmap.shape[:2] != (CONFIG.IMAGE_TARGET_HEIGHT, CONFIG.IMAGE_TARGET_WIDTH):
+        depthmap = tf.image.resize(depthmap, (CONFIG.IMAGE_TARGET_HEIGHT, CONFIG.IMAGE_TARGET_WIDTH))
+    targets = preprocess_targets(targets, TARGET_INDEXES, TARGET_NAMES)
+    return depthmap, targets
+
+
 # Function for loading and processing depthmaps.
 def tf_load_pickle(path, max_value):
-    def py_load_pickle(path, max_value):
-        depthmap, targets = pickle.load(open(path.numpy(), "rb"))
-        depthmap = preprocess_depthmap(depthmap)
-        depthmap = depthmap / max_value
-        if depthmap.shape[:2] != (CONFIG.IMAGE_TARGET_HEIGHT, CONFIG.IMAGE_TARGET_WIDTH):
-            depthmap = tf.image.resize(depthmap, (CONFIG.IMAGE_TARGET_HEIGHT, CONFIG.IMAGE_TARGET_WIDTH))
-        targets = preprocess_targets(targets, TARGET_INDEXES, TARGET_NAMES)
-        return depthmap, targets
-
     depthmap, targets = tf.py_function(py_load_pickle, [path, max_value], [tf.float32, tf.float32])
     depthmap.set_shape((CONFIG.IMAGE_TARGET_HEIGHT, CONFIG.IMAGE_TARGET_WIDTH, 1))
     targets.set_shape(LENGTH_TARGETS)
