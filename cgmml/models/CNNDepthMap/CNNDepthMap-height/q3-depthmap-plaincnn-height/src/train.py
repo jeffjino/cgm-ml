@@ -16,7 +16,7 @@ from cgmml.common.model_utils.preprocessing import filter_blacklisted_persons, p
 from cgmml.common.model_utils.utils import (
     download_dataset, get_dataset_path, AzureLogCallback,
     create_tensorboard_callback, get_optimizer, setup_wandb)
-from config import CONFIG
+from config_weight import CONFIG
 from constants import MODEL_CKPT_FILENAME, REPO_DIR
 
 logger = logging.getLogger(__name__)

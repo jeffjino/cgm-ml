@@ -5,8 +5,8 @@ DATASET_MODE_MOUNT = "dataset_mode_mount"
 
 CONFIG = Bunch(dict(
     DATASET_MODE=DATASET_MODE_DOWNLOAD,
-    DATASET_NAME="anon-depthmap-95k",
-    DATASET_NAME_LOCAL="dataset-2021-08-25-07-23-47",
+    DATASET_NAME="depthmap-19k",
+    DATASET_NAME_LOCAL="depthmap-19k",
     SPLIT_SEED=0,
     IMAGE_TARGET_HEIGHT=240,
     IMAGE_TARGET_WIDTH=180,
