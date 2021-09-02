@@ -134,7 +134,7 @@ def preprocess_targets(targets, targets_indices):
         except KeyError:
             logger.info("Key %s not found in GOODBAD_DICT", targets[GOODBAD_IDX])
             targets[GOODBAD_IDX] = GOODBAD_DICT['delete']  # unknown target values will be categorized as 'delete'
-
+    print("Targets:",targets)
     if targets_indices is not None:
         targets = targets[targets_indices]
     return targets.astype("float32")
