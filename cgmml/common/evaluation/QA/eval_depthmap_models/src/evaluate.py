@@ -51,11 +51,11 @@ logging.basicConfig(level=logging.INFO,
 
 QA_CONFIG_MODULES = [
     'qa_config_height',  # takes 14min in CI
-    'qa_config_height_clean',  # takes 9min in CI
+#     'qa_config_height_clean',  # takes 9min in CI
     # 'qa_config_height_deep_ensemble',  # takes 50min in CI # is not in new central-india AzureML
     # 'qa_config_height_mcnn',  # takes 19min in CI   # is not in new central-india AzureML
     # 'qa_config_height_filter',  # is not in new central-india AzureML
-    'qa_config_weight',  # takes 13min in CI
+#     'qa_config_weight',  # takes 13min in CI
 ]
 
 if __name__ == "__main__":
