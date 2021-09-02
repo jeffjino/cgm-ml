@@ -128,15 +128,15 @@ def preprocess(path):
 def preprocess_targets(targets, targets_indices):
     if SEX_IDX in targets_indices:
         targets[SEX_IDX] = SEX_DICT[targets[SEX_IDX]]
-    # if GOODBAD_IDX in targets_indices:
-    #     try:
-    #         targets[GOODBAD_IDX] = GOODBAD_DICT[targets[GOODBAD_IDX]]
-    #     except KeyError:
-    #         logger.info("Key %s not found in GOODBAD_DICT", targets[GOODBAD_IDX])
-    #         targets[GOODBAD_IDX] = GOODBAD_DICT['delete']  # unknown target values will be categorized as 'delete'
+    if GOODBAD_IDX in targets_indices:
+        try:
+            targets[GOODBAD_IDX] = GOODBAD_DICT[targets[GOODBAD_IDX]]
+        except KeyError:
+            logger.info("Key %s not found in GOODBAD_DICT", targets[GOODBAD_IDX])
+            targets[GOODBAD_IDX] = GOODBAD_DICT['delete']  # unknown target values will be categorized as 'delete'
     print("Targets:",targets)
     if targets_indices is not None:
-        targets = targets[targets_indices]
+        targets = targets['height']
     return targets.astype("float32")
 
 
