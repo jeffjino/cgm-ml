@@ -125,19 +125,30 @@ def preprocess(path):
     return depthmap, targets
 
 
-def preprocess_targets(targets, targets_indices):
-    if SEX_IDX in targets_indices:
-        targets[SEX_IDX] = SEX_DICT[targets[SEX_IDX]]
-    if GOODBAD_IDX in targets_indices:
-        try:
-            targets[GOODBAD_IDX] = GOODBAD_DICT[targets[GOODBAD_IDX]]
-        except KeyError:
-            logger.info("Key %s not found in GOODBAD_DICT", targets[GOODBAD_IDX])
-            targets[GOODBAD_IDX] = GOODBAD_DICT['delete']  # unknown target values will be categorized as 'delete'
-    print("Targets:",targets)
-    if targets_indices is not None:
-        targets = targets['height']
-    return targets.astype("float32")
+# def preprocess_targets(targets, targets_indices):
+#     # if SEX_IDX in targets_indices:
+#     #     targets[SEX_IDX] = SEX_DICT[targets[SEX_IDX]]
+#     # if GOODBAD_IDX in targets_indices:
+#     #     try:
+#     #         targets[GOODBAD_IDX] = GOODBAD_DICT[targets[GOODBAD_IDX]]
+#     #     except KeyError:
+#     #         logger.info("Key %s not found in GOODBAD_DICT", targets[GOODBAD_IDX])
+#     #         targets[GOODBAD_IDX] = GOODBAD_DICT['delete']  # unknown target values will be categorized as 'delete'
+#     print("Targets:",targets)
+#     if targets_indices is not None:
+#         targets = targets['height']
+#     return targets.astype("float32")
+
+
+def preprocess_targets(targets: Union[list, dict],
+                       target_indices: list = None,
+                       target_names: list = None) -> np.ndarray:
+    assert (target_indices is not None) != (target_names is not None), (target_indices, target_names)  # xor
+    if target_indices is not None:
+        targets = targets[target_indices]
+    elif target_names is not None:
+        targets = [targets[target_name] for target_name in target_names]
+    return np.array(targets).astype("float32")
 
 
 def preprocess_depthmap(depthmap):
