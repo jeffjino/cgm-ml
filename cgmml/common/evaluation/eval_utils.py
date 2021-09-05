@@ -30,7 +30,7 @@ CONFIG = Bunch(dict(
     IMAGE_TARGET_HEIGHT=240,
     IMAGE_TARGET_WIDTH=180,
     NORMALIZATION_VALUE=7.5,
-    TARGET_INDEXES=[0],  # 0 is height, 1 is weight.
+    TARGET_INDEXES='height',  # 0 is height, 1 is weight.
     DATA_AUGMENTATION_MODE=DATA_AUGMENTATION_NO,
     SAMPLING_STRATEGY=SAMPLING_STRATEGY_SYSTEMATIC,
     N_ARTIFACTS=5,
@@ -142,14 +142,16 @@ def preprocess(path):
 #     return targets.astype("float32")
 
 
-def preprocess_targets(targets: Union[list, dict],
-                       target_indices: list = None,
-                       target_names: list = None) -> np.ndarray:
-    assert (target_indices is not None) != (target_names is not None), (target_indices, target_names)  # xor
+def preprocess_targets(targets,
+                       target_indices) -> np.ndarray:
+#     assert (target_indices is not None) != (target_names is not None), (target_indices, target_names)  # xor
+
+    print(targets)
+    print(target_indices)
     if target_indices is not None:
         targets = targets[target_indices]
-    elif target_names is not None:
-        targets = [targets[target_name] for target_name in target_names]
+#     elif target_names is not None:
+#         targets = [targets[target_name] for target_name in target_names]
     return np.array(targets).astype("float32")
 
 
