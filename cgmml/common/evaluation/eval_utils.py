@@ -4,7 +4,7 @@ from pathlib import Path
 import pickle
 import tensorflow as tf
 from typing import Union
-
+import numpy as np 
 
 from bunch import Bunch
 import pandas as pd
@@ -97,7 +97,7 @@ def tf_load_pickle(path, max_value):
 
     depthmap, targets = tf.py_function(py_load_pickle, [path, max_value], [tf.float32, tf.float32])
     depthmap.set_shape((CONFIG.IMAGE_TARGET_HEIGHT, CONFIG.IMAGE_TARGET_WIDTH, 1))
-    targets.set_shape((len(CONFIG.TARGET_INDEXES,)))
+    targets.set_shape((len(CONFIG.TARGET_INDEXES)))
     return depthmap, targets
 
 
