@@ -3,6 +3,8 @@ import logging
 from pathlib import Path
 import pickle
 import tensorflow as tf
+from typing import Union
+
 
 from bunch import Bunch
 import pandas as pd
