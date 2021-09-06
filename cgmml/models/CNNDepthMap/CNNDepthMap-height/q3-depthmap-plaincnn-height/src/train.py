@@ -60,11 +60,11 @@ else:
     # Mount or download
     dataset_path = run.input_datasets['cgm_dataset']
 
-# Get the QR-code paths.
+# Get the person paths
 dataset_path = os.path.join(dataset_path, "scans")
 logger.info('Dataset path: %s', dataset_path)
 #logger.info(glob.glob(os.path.join(dataset_path, "*"))) # Debug
-logger.info('Getting QR-code paths...')
+logger.info('Getting person paths...')
 person_paths = glob.glob(os.path.join(dataset_path, "*"))
 logger.info('person_paths: %d', len(person_paths))
 assert len(person_paths) != 0
