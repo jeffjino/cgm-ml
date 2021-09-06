@@ -5,9 +5,8 @@ DATASET_MODE_MOUNT = "dataset_mode_mount"
 
 CONFIG = Bunch(dict(
     DATASET_MODE=DATASET_MODE_DOWNLOAD,
-    DATASET_NAME="anon-rgbd-5kscans",
-    DATASET_NAME_LOCAL="anon-rgbd-5kscans-mini",  # 20 qrcodes
-    DATASET_IS_BGR=True,
+    DATASET_NAME="anon-rgbd-5k-100and102",
+    DATASET_NAME_LOCAL="anon-rgbd-5k-100and102",  # 20 qrcodes
 
     SPLIT_SEED=0,
     IMAGE_TARGET_HEIGHT=240,
@@ -24,6 +23,6 @@ CONFIG = Bunch(dict(
     CLUSTER_NAME='gpu-cluster-V100',
 
     # Parameters for dataset generation.
-    TARGET_INDEXES=[0],  # 0 is height, 1 is weight.
+    TARGET_NAMES=['weight'],
     CODES=['100', '101', '102', '200', '201', '202'],
 ))

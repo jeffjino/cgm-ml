@@ -108,30 +108,27 @@ del person_paths_validate
 logger.info('Using %d files for training.', len(paths_training))
 logger.info('Using %d files for validation.', len(paths_validate))
 
+TARGET_INDEXES = getattr(CONFIG, 'TARGET_INDEXES', None)
+TARGET_NAMES = getattr(CONFIG, 'TARGET_NAMES', None)
+assert (TARGET_INDEXES is not None) != (TARGET_NAMES is not None), (TARGET_INDEXES, TARGET_NAMES)  # xor
+LENGTH_TARGETS = len(TARGET_INDEXES) if TARGET_INDEXES else len(TARGET_NAMES)
+
+
+def py_load_pickle(path, max_value):  # TODO max_value unused
+        drgb, targets = pickle.load(open(path.numpy(), "rb"))
+        drgb = preprocess_depthmap(drgb)
+
+        if drgb.shape[:2] != (CONFIG.IMAGE_TARGET_HEIGHT, CONFIG.IMAGE_TARGET_WIDTH):
+            drgb = tf.image.resize(drgb, (CONFIG.IMAGE_TARGET_HEIGHT, CONFIG.IMAGE_TARGET_WIDTH))
+        targets = preprocess_targets(targets, TARGET_INDEXES, TARGET_NAMES)
+        return drgb, targets
+
 
 def tf_load_pickle(path, max_value):
-    def py_load_pickle(path, max_value):
-        rgbd_tuple, targets = pickle.load(open(path.numpy(), "rb"))
-        rgb = rgbd_tuple[0]  # shape: (240, 180, 3)
-        if getattr(CONFIG, 'DATASET_IS_BGR', False):
-            rgb = rgb[:, :, ::-1]  # BGR -> RGB
-        depthmap = rgbd_tuple[1]  # shape: (240, 180)
-
-        rgb = preprocess_depthmap(rgb)
-        rgb = rgb / 255.
-
-        depthmap = preprocess_depthmap(depthmap)
-        depthmap = depthmap / max_value
-        depthmap = tf.expand_dims(depthmap, -1)  # shape: (240, 180, 1)
-        rgbd = tf.concat([rgb, depthmap], axis=2)
-        rgbd = tf.image.resize(rgbd, (CONFIG.IMAGE_TARGET_HEIGHT, CONFIG.IMAGE_TARGET_WIDTH))
-        targets = preprocess_targets(targets, CONFIG.TARGET_INDEXES)
-        return rgbd, targets
-
-    rgbd, targets = tf.py_function(py_load_pickle, [path, max_value], [tf.float32, tf.float32])
-    rgbd.set_shape((CONFIG.IMAGE_TARGET_HEIGHT, CONFIG.IMAGE_TARGET_WIDTH, NUM_INPUT_CHANNELS))
-    targets.set_shape((len(CONFIG.TARGET_INDEXES,)))
-    return rgbd, targets
+    drgb, targets = tf.py_function(py_load_pickle, [path, max_value], [tf.float32, tf.float32])
+    drgb.set_shape((CONFIG.IMAGE_TARGET_HEIGHT, CONFIG.IMAGE_TARGET_WIDTH, NUM_INPUT_CHANNELS))
+    targets.set_shape(LENGTH_TARGETS)
+    return drgb, targets
 
 
 # Create dataset for training.
