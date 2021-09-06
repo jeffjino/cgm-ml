@@ -65,28 +65,28 @@ dataset_path = os.path.join(dataset_path, "qrcode")
 logger.info('Dataset path: %s', dataset_path)
 #logger.info(glob.glob(os.path.join(dataset_path, "*"))) # Debug
 logger.info('Getting QR-code paths...')
-qrcode_paths = glob.glob(os.path.join(dataset_path, "*"))
-logger.info('qrcode_paths: %d', len(qrcode_paths))
-assert len(qrcode_paths) != 0
+person_paths = glob.glob(os.path.join(dataset_path, "*"))
+logger.info('person_paths: %d', len(person_paths))
+assert len(person_paths) != 0
 
-qrcode_paths = filter_blacklisted_persons(qrcode_paths)
+person_paths = filter_blacklisted_persons(person_paths)
 
 # Shuffle and split into train and validate.
-random.shuffle(qrcode_paths)
-split_index = int(len(qrcode_paths) * 0.8)
-qrcode_paths_training = qrcode_paths[:split_index]
-qrcode_paths_validate = qrcode_paths[split_index:]
+random.shuffle(person_paths)
+split_index = int(len(person_paths) * 0.8)
+person_paths_training = person_paths[:split_index]
+person_paths_validate = person_paths[split_index:]
 
-del qrcode_paths
+del person_paths
 
 # Show split.
-logger.info('Paths for training: \n\t' + '\n\t'.join(qrcode_paths_training))
-logger.info('Paths for validation: \n\t' + '\n\t'.join(qrcode_paths_validate))
+logger.info('Paths for training: \n\t' + '\n\t'.join(person_paths_training))
+logger.info('Paths for validation: \n\t' + '\n\t'.join(person_paths_validate))
 
-logger.info('Nbr of qrcode_paths for training: %d', len(qrcode_paths_training))
-logger.info('Nbr of qrcode_paths for validation: %d', len(qrcode_paths_validate))
+logger.info('Nbr of person_paths for training: %d', len(person_paths_training))
+logger.info('Nbr of person_paths for validation: %d', len(person_paths_validate))
 
-assert len(qrcode_paths_training) > 0 and len(qrcode_paths_validate) > 0
+assert len(person_paths_training) > 0 and len(person_paths_validate) > 0
 
 
 def get_depthmap_files(paths):
@@ -99,11 +99,11 @@ def get_depthmap_files(paths):
 
 # Get the pointclouds.
 logger.info('Getting depthmap paths...')
-paths_training = get_depthmap_files(qrcode_paths_training)
-paths_validate = get_depthmap_files(qrcode_paths_validate)
+paths_training = get_depthmap_files(person_paths_training)
+paths_validate = get_depthmap_files(person_paths_validate)
 
-del qrcode_paths_training
-del qrcode_paths_validate
+del person_paths_training
+del person_paths_validate
 
 logger.info('Using %d files for training.', len(paths_training))
 logger.info('Using %d files for validation.', len(paths_validate))
