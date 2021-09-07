@@ -87,10 +87,13 @@ class Evaluation:
         )
 
         # filter goodbad==delete
-        if GOODBAD_IDX in self.data_config.TARGET_INDEXES:
-            goodbad_index = self.data_config.TARGET_INDEXES.index(GOODBAD_IDX)
-            dataset = dataset.filter(
-                lambda _path, _depthmap, targets: targets[goodbad_index] != GOODBAD_DICT['delete'])
+        print("data_config",self.data_config.TARGET_INDEXES)
+        print("data_config",self.data_config)
+        print("index",GOODBAD_IDX)
+#         if GOODBAD_IDX in self.data_config.TARGET_INDEXES:
+#             goodbad_index = self.data_config.TARGET_INDEXES.index(GOODBAD_IDX)
+#             dataset = dataset.filter(
+#                 lambda _path, _depthmap, targets: targets[goodbad_index] != GOODBAD_DICT['delete'])
 
         dataset = dataset.cache()
         dataset = dataset.prefetch(tf.data.experimental.AUTOTUNE)
@@ -105,7 +108,16 @@ class Evaluation:
 
         dataset_evaluation = temp_dataset_evaluation.map(lambda _path, depthmap, targets: (depthmap, targets))
         del temp_dataset_evaluation
-        return dataset_evaluation, paths_belonging_to_predictions
+        return dataset_evaluation, paths_belonging_to_predictions  
+    
+    
+#     def prep_data(self,qrcode_paths,filter_config):
+#         pickle_data = get_depthmap_files(qrcode_paths)
+#         dataset_new = tf.data.Dataset.from_tensor_slices(pickle_data[:10])
+#         dataset_new = dataset_new.map(lambda path: tf_load_pickle(path, self.data_config.NORMALIZATION_VALUE, self.data_config))
+#         dataset_new = dataset_new.cache()
+#         dataset_new = dataset_new.prefetch(tf.data.experimental.AUTOTUNE)
+#         return dataset_new
 
     def get_prediction_(self, model_path: Path, dataset_evaluation: tf.data.Dataset) -> np.ndarray:
         return get_prediction(model_path, dataset_evaluation, self.data_config)

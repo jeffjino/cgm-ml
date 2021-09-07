@@ -17,7 +17,7 @@ from sklearn.metrics import ConfusionMatrixDisplay, confusion_matrix
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt  # noqa: E402
-from cgmzscore import Calculator  # noqa: E402
+# from cgmzscore import Calculator  # noqa: E402
 
 from .constants_eval import (  # noqa: E402
     CODE_TO_SCANTYPE, COLUMN_NAME_AGE, COLUMN_NAME_GOODBAD, COLUMN_NAME_SEX, DAYS_IN_YEAR,
@@ -442,7 +442,9 @@ def get_prediction(model_path: str, dataset_evaluation: tf.data.Dataset, data_co
     model = load_model(model_path, compile=False)
 
     dataset = dataset_evaluation.batch(data_config.BATCH_SIZE)
-
+    print("data:",dataset)
+    print("model:",model.summary())
+    print(data_config)
     logger.info("starting predicting")
     start = time.time()
     predictions = model.predict(dataset, batch_size=data_config.BATCH_SIZE)
@@ -497,8 +499,26 @@ def tf_load_pickle(path, max_value, data_config):
 
     depthmap, targets = tf.py_function(py_load_pickle, [path, max_value], [tf.float32, tf.float32])
     depthmap.set_shape((data_config.IMAGE_TARGET_HEIGHT, data_config.IMAGE_TARGET_WIDTH, 1))
-    targets.set_shape((len(data_config.TARGET_INDEXES,)))
+    targets.set_shape((len(data_config.TARGET_INDEXES)))
     return path, depthmap, targets
+
+# def tf_load_pickle(path, max_value,data_config):
+#     def py_load_pickle(path, max_value):
+#         depthmap, targets = pickle.load(open(path.numpy(), "rb"))
+#         depthmap = preprocess_depthmap(depthmap)
+#         depthmap = depthmap / max_value
+#         if depthmap.shape[:2] != (data_config.IMAGE_TARGET_HEIGHT, data_config.IMAGE_TARGET_WIDTH):
+#             depthmap = tf.image.resize(depthmap, (data_config.IMAGE_TARGET_HEIGHT, data_config.IMAGE_TARGET_WIDTH))
+#         targets = preprocess_targets(targets, data_config.TARGET_INDEXES)
+#         return depthmap, targets
+
+    depthmap, targets = tf.py_function(py_load_pickle, [path, max_value], [tf.float32, tf.float32])
+    depthmap.set_shape((data_config.IMAGE_TARGET_HEIGHT ,data_config.IMAGE_TARGET_WIDTH, 1))
+    targets.set_shape(1)
+    return depthmap, targets
+
+
+
 
 
 def prepare_sample_dataset(df_sample: pd.DataFrame, dataset_path: str, data_config: Bunch) -> tf.data.Dataset:
