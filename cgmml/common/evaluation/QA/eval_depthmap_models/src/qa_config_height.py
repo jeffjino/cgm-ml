@@ -6,8 +6,8 @@ CONFIG_NAME = os.path.splitext(os.path.basename(__file__))[0]
 
 # Details of model used for evaluation
 MODEL_CONFIG = Bunch(dict(
-    EXPERIMENT_NAME='q4-depthmap-plaincnn-height-19k',
-    RUN_ID='q4-depthmap-plaincnn-height-19k_1630498237_55681748',  # Run 1
+    EXPERIMENT_NAME='q4-depthmap-plaincnn-height-264k',
+    RUN_ID='q4-depthmap-plaincnn-height-264k_1631047085_7bc153d2',  # Run 1
     INPUT_LOCATION='outputs',
     NAME='best_model.ckpt',
 ))
@@ -15,7 +15,7 @@ MODEL_CONFIG = Bunch(dict(
 
 EVAL_CONFIG = Bunch(dict(
     # Name of evaluation
-    NAME='q4-depthmap-plaincnn-height-19k_run_01',
+    NAME='q4-depthmap-plaincnn-height-264k_run_01',
 
     # Experiment in Azure ML which will be used for evaluation
 
