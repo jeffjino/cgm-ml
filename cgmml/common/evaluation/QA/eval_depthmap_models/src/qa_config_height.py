@@ -30,7 +30,7 @@ EVAL_CONFIG = Bunch(dict(
 
 # Details of Evaluation Dataset
 DATA_CONFIG = Bunch(dict(
-    NAME='depthmap-5k-testset',  # Name of evaluation dataset
+    NAME='depthmap-83k-testset',  # Name of evaluation dataset
 
     IMAGE_TARGET_HEIGHT=240,
     IMAGE_TARGET_WIDTH=180,
