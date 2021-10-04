@@ -6,8 +6,8 @@ CONFIG_NAME = os.path.splitext(os.path.basename(__file__))[0]
 
 # Details of model used for evaluation
 MODEL_CONFIG = Bunch(dict(
-    EXPERIMENT_NAME='q3-depthmap-plaincnn-height-95k',
-    RUN_ID='q3-depthmap-plaincnn-height-95k_1629821224_3ce63344',  # Run 9
+    EXPERIMENT_NAME='q4-depthmap-plaincnn-height-264k',
+    RUN_ID='q4-depthmap-plaincnn-height-264k_1631047085_7bc153d2',  # Run 1
     INPUT_LOCATION='outputs',
     NAME='best_model.ckpt',
 ))
@@ -15,7 +15,7 @@ MODEL_CONFIG = Bunch(dict(
 
 EVAL_CONFIG = Bunch(dict(
     # Name of evaluation
-    NAME='q3-depthmap-plaincnn-height-95k_run_02',
+    NAME='q4-depthmap-plaincnn-height-264k_run_01',
 
     # Experiment in Azure ML which will be used for evaluation
 
@@ -30,7 +30,7 @@ EVAL_CONFIG = Bunch(dict(
 
 # Details of Evaluation Dataset
 DATA_CONFIG = Bunch(dict(
-    NAME='anon-realtime-testdata',  # Name of evaluation dataset
+    NAME='depthmap-83k-testset',  # Name of evaluation dataset
 
     IMAGE_TARGET_HEIGHT=240,
     IMAGE_TARGET_WIDTH=180,
@@ -40,7 +40,7 @@ DATA_CONFIG = Bunch(dict(
 
     # 0 is height, 1 is weight, 2 is muac, 3 is age,
     # 4 is sex('male' or 'female'), 5 is quality ('good' or 'bad'), 6 is test
-    TARGET_INDEXES=[0, 3, 4, 5],
+    TARGET_INDEXES=['height'],
 
     CODES=['100', '101', '102', '200', '201', '202']
 ))
