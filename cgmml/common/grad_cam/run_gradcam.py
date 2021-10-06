@@ -1,35 +1,14 @@
 # gradcam algorithm taken from F. Chollet elephant example
-
-import azureml
-from azureml.core import Workspace, Dataset
-from azureml.core import Experiment
-from azureml.core.run import Run 
-import sys
 import os
 
-import tensorflow as tf 
+import tensorflow as tf
 from tensorflow import keras
-from tensorflow.keras import models, layers
-from tensorflow.keras.models import Model
-#from tensorflow.keras.applications.xception import Xception
-from tensorflow.keras.models import load_model
 import numpy as np
 from pathlib import Path
-import glob2 as glob
-import random
-import pickle
-import cv2
 
-# Display F. Chollet example
-from IPython.display import Image, display
-import matplotlib
-#matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 
-from skimage.transform import rescale, resize, downscale_local_mean
-
-from cgmml.common.evaluation.eval_utilities import download_model
 
 REPO_DIR = Path(os.getcwd()).parents[2].absolute()
 
@@ -146,7 +125,7 @@ def return_gradcams(preprocessed_depthmaps, heatmaps, transparency):
 
         jet_heatmap = keras.preprocessing.image.img_to_array(jet_heatmap)
         # Superimpose the heatmap on original image
-        ## TODO - fix dimensions!! how do i do this later with batches - for now: strip first batch dim
+        # TODO - fix dimensions!! how do i do this later with batches - for now: strip first batch dim
         superimposed_img = jet_heatmap * transparency + preprocessed_depthmaps[i]
         superimposed_img = keras.preprocessing.image.array_to_img(superimposed_img)
 
@@ -163,8 +142,9 @@ def remove_batchdim(depthmaps):
     for depthmap in depthmaps:
         depthmap = depthmap[0, :, :, :]
         new_depthmaps.append(depthmap)
-    
+
     return new_depthmaps
+
 
 def add_batchdim(depthmaps):
     new_depthmaps = []
@@ -204,8 +184,8 @@ def return_gradcam(dmap_array, heatmap, transparency):
     jet_heatmap = keras.preprocessing.image.img_to_array(jet_heatmap)
     print("jet_heatmap.shape = ", jet_heatmap.shape)
     # Superimpose the heatmap on original image
-    ## TODO - fix dimensions!! how do i do this later with batches - for now: strip first batch dim
-    dmap_array = dmap_array[0, :, :, :]  #do I need this in cgm-rg? idk
+    # TODO - fix dimensions!! how do i do this later with batches - for now: strip first batch dim
+    dmap_array = dmap_array[0, :, :, :]  # do I need this in cgm-rg? idk
     print("dmap_array.shape = ", dmap_array.shape)
     superimposed_img = jet_heatmap * transparency + dmap_array
     print("superimposed_img.shape ", superimposed_img.size)
@@ -221,10 +201,3 @@ def return_gradcam(dmap_array, heatmap, transparency):
     plt.show()
 
     return superimposed_img
-
-
-
-
-
-
-
