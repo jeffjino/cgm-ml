@@ -162,9 +162,9 @@ def show_gradcam(superimposed_imgs):
 
 
 #process one
-def return_gradcam(dmap_array, heatmap, transparency): 
+def return_gradcam(dmap_array, heatmap, transparency):
     # maybe add 2 channels in depthmap? replicate depth channel 3x
-    # write own overlay function 
+    # write own overlay function
     # see cgm-rg for depthmap vi
     # visualize depthmaps in grayscale - color is misleading
     # Rescale heatmap to a range 0-255
@@ -205,4 +205,3 @@ def return_gradcam(dmap_array, heatmap, transparency):
     plt.show()
 
     return superimposed_img
-
