@@ -15,7 +15,7 @@ REPO_DIR = Path(os.getcwd()).parents[2].absolute()
 
 def show_depthmaps(depthmaps):
     for depthmap in depthmaps:
-        plt.imshow(depthmap)
+        plt.imshow(depthmap, cmap='gray')
         plt.show()
 
 
@@ -162,7 +162,11 @@ def show_gradcam(superimposed_imgs):
 
 
 #process one
-def return_gradcam(dmap_array, heatmap, transparency):
+def return_gradcam(dmap_array, heatmap, transparency): 
+    # maybe add 2 channels in depthmap? replicate depth channel 3x
+    # write own overlay function 
+    # see cgm-rg for depthmap vi
+    # visualize depthmaps in grayscale - color is misleading
     # Rescale heatmap to a range 0-255
     heatmap = np.uint8(255 * heatmap)
     print("heatmap.shape = ", heatmap.shape)
@@ -201,3 +205,4 @@ def return_gradcam(dmap_array, heatmap, transparency):
     plt.show()
 
     return superimposed_img
+
