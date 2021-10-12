@@ -8,7 +8,7 @@ from pathlib import Path
 
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
-
+import cv2
 
 REPO_DIR = Path(os.getcwd()).parents[2].absolute()
 
@@ -205,3 +205,45 @@ def return_gradcam(dmap_array, heatmap, transparency):
     plt.show()
 
     return superimposed_img
+
+
+def overlay_depthmap_gradcam(depthmap, gradcam, transparency=0.4):
+    depthmap = depthmap.reshape(depthmap.shape[1:])
+    depthmap_saved = keras.preprocessing.image.array_to_img(depthmap)
+    depthmap_saved.save('depthmap.png')
+
+    heatmap = np.uint8(255 * gradcam)
+
+    jet_cm = cm.get_cmap("jet")
+    jet_colors = jet_cm(np.arange(256))[:, :3]
+    jet_heatmap = jet_colors[heatmap]
+
+    jet_hm_img = keras.preprocessing.image.array_to_img(jet_heatmap)
+    jet_hm_img = jet_hm_img.resize((depthmap.shape[1], depthmap.shape[0]))
+    jet_hm_img.save('jetmap.png')
+
+    depthmap_load = cv2.imread('depthmap.png')
+    depthmap_load = depthmap_load[..., ::-1]
+
+    jet_load = cv2.imread('jetmap.png')
+    jet_load = jet_load[..., ::-1]
+    output_image = cv2.addWeighted(depthmap_load, (1.0 - transparency), jet_load, transparency, 0)
+    #cv2.imwrite('jasmintest.png', output_image)
+
+    plt.imshow(output_image)
+    plt.show()
+    return output_image
+
+
+def extract_last_conv_layer_name(model, substring='conv'):
+    # 1. save all layer names in a list
+    layer_names = [layer.name for layer in model.layers]
+
+    # 2. search for substring in all layers and put them in list
+    conv_layer_names = []
+    for layer in layer_names:
+        if substring in layer:
+            conv_layer_names.append(layer)
+
+    # 3. return last one
+    return conv_layer_names[-1]
