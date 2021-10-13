@@ -33,6 +33,9 @@ jobs:
     - name: pytest
       run: |
         . ./.venv/bin/activate && pytest --cov=cgmml --cov-report=xml
+    - name: type-check
+      run: pip install mypy &&
+           mypy --show-error-codes --ignore-missing-imports cgmml/common/data_utilities/
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v1
       with:
