@@ -23,6 +23,7 @@ cgmzscore==2.0.4
 wandb
 azureml-sdk[notebooks]==1.21.0
 flake8==3.9.2
+pytype==2021.10.11
 pep8-naming==0.12.1
 pytest==6.1.2
 pytest-cov==2.10.1
