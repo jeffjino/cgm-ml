@@ -102,7 +102,7 @@ class Depthmap:
             depth_scale: float,
             max_confidence: float,
             device_pose: List[float],
-            rgb_fpath: Path,
+            rgb_fpath: Optional[Path],
             rgb_array: np.ndarray,
             header: str = None):
         """Constructor
@@ -152,7 +152,7 @@ class Depthmap:
     @classmethod
     def create_from_zip_absolute(cls,
                                  depthmap_fpath: str,
-                                 rgb_fpath: str,
+                                 rgb_fpath: Optional[str],
                                  calibration_fpath: str) -> 'Depthmap':
         width, height, data, depth_scale, max_confidence, device_pose, header_line = (
             Depthmap.read_depthmap_data(depthmap_fpath))

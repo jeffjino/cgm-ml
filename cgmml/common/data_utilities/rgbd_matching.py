@@ -1,7 +1,7 @@
 from collections import namedtuple
 from copy import copy
 import logging
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 
 from bunch import Bunch
 import pandas as pd
@@ -29,7 +29,7 @@ def find_closest_image(image_order_numbers, depth_order_number):
     return closest_image_order_number
 
 
-def find_image_artifact_with_order_number(image_artifacts: List[Artifact], order_number: str) -> Artifact:
+def find_image_artifact_with_order_number(image_artifacts: List[Artifact], order_number: str) -> Optional[Artifact]:
     """Find the image artifact with the given order_number"""
     for artifact in image_artifacts:
         if artifact.order_number == order_number:

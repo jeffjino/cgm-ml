@@ -67,7 +67,7 @@ def preprocess_rgb(rgb_array: np.ndarray) -> np.ndarray:
 
 
 def create_layers(depthmap_fpath: str) -> Tuple[np.ndarray, dict]:
-    dmap = Depthmap.create_from_zip_absolute(depthmap_fpath, rgb_fpath=None, calibration_fpath=CALIBRATION_FPATH)
+    dmap = Depthmap.create_from_zip_absolute(depthmap_fpath, rgb_fpath=None, calibration_fpath=str(CALIBRATION_FPATH))
     depthmap = dmap.depthmap_arr  # shape: (width, height)
     depthmap = preprocess(depthmap)
     layers = depthmap
@@ -95,7 +95,7 @@ def rotate_and_load_depthmap_with_rgbd(depthmap_fpath: str, rgb_fpath: str, cali
     depthmap_arr = None
     rgb_fpath = None
 
-    dmap = Depthmap(intrinsics, width, height, data, depthmap_arr,
+    dmap = Depthmap(np.array(intrinsics), width, height, data, depthmap_arr,
                     depth_scale, max_confidence, device_pose,
                     rgb_fpath, rgb_array, header_line)
     return dmap
@@ -103,9 +103,9 @@ def rotate_and_load_depthmap_with_rgbd(depthmap_fpath: str, rgb_fpath: str, cali
 
 def create_layers_rgbd(depthmap_fpath: str, rgb_fpath: str, should_rotate_rgb: bool) -> Tuple[np.ndarray, dict]:
     if should_rotate_rgb:
-        dmap = Depthmap.create_from_zip_absolute(depthmap_fpath, rgb_fpath, CALIBRATION_FPATH)
+        dmap = Depthmap.create_from_zip_absolute(depthmap_fpath, rgb_fpath, str(CALIBRATION_FPATH))
     else:
-        dmap = rotate_and_load_depthmap_with_rgbd(depthmap_fpath, rgb_fpath, CALIBRATION_FPATH)
+        dmap = rotate_and_load_depthmap_with_rgbd(depthmap_fpath, rgb_fpath, str(CALIBRATION_FPATH))
 
     if not dmap.device_pose:
         raise InvalidDevicePoseError()
