@@ -4,9 +4,9 @@ import numpy as np
 
 from cgmml.common.depthmap_toolkit.depthmap import is_google_tango_resolution
 from cgmml.models.HRNET.body_pose import BodyPose
+from cgmml.models.Pose3dPoints.Pose3dPoints_height.m2021q4_randomforest.src.inference import predict_rf_height
 
-PREDICTION_OFFSET_IN_CM = 11.0
-PREDICTION_SCALE_FACTOR = 1.01
+TEMP_FILE = 'temp.obj'
 
 
 def predict_height(depthmap_file: str, rgb_file: str, calibration_file: str) -> Tuple[float, float]:
@@ -29,7 +29,8 @@ def predict_height(depthmap_file: str, rgb_file: str, calibration_file: str) -> 
         raise Exception('Skipping because the child is standing')
 
     # Return result
-    height_in_cm = body.get_person_length() * 100.0 * PREDICTION_SCALE_FACTOR + PREDICTION_OFFSET_IN_CM
+    body.export_object(TEMP_FILE)
+    height_in_cm = predict_rf_height(TEMP_FILE)
     return height_in_cm, angle
 
 
