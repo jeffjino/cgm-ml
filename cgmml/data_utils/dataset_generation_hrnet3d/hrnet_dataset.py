@@ -33,16 +33,8 @@ if __name__ == "__main__":
     metadata_filtered = []
     for row in metadata:
 
-        # Check if the scan version is correct
-        if not row[METADATA_SCAN_VERSION].startswith('v0.9'):
-            continue
-
-        # Check if it is not badly performing scan type
-        if row[METADATA_SCAN_TYPE].startswith('101'):
-            continue
-        if row[METADATA_SCAN_TYPE].startswith('102'):
-            continue
-        if row[METADATA_SCAN_TYPE].startswith('202'):
+        # Check if the scan version is good enough
+        if row[METADATA_SCAN_VERSION].startswith('v0.8'):
             continue
 
         metadata_filtered.append(row)
