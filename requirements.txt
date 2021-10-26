@@ -27,4 +27,4 @@ pep8-naming==0.12.1
 pytest==6.1.2
 pytest-cov==2.10.1
 pytest-azurepipelines==0.8.0
-yacs
+yacs==0.1.8
